@@ -188,7 +188,7 @@ function App() {
           >
             {sidebarVisible ? <Sidebar className="h-5 w-5" /> : <List className="h-5 w-5" />}
           </Button>
-          <h1 className="text-sm font-semibold">Crowe Code</h1>
+          <h1 className="text-sm font-semibold text-slate-50 border-cyan-300">Crowe Code</h1>
         </div>
         <div className="flex items-center gap-2">
           <div className="text-xs text-muted-foreground hidden sm:block">
@@ -231,7 +231,7 @@ function App() {
             onTabClose={handleTabClose}
           />
 
-          <div className="flex-1 overflow-hidden bg-slate-50 text-slate-950 border-slate-950 font-thin text-base">
+          <div className="flex-1 overflow-hidden bg-slate-50 text-slate-950 border-slate-950 font-thin text-xs">
             {activeTab ? (
               <CodeEditor
                 content={activeTab.content}

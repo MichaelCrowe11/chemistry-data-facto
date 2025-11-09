@@ -49,7 +49,7 @@
   --spacing: 0.20rem;
   --font-sans: IBM Plex Sans;
   --font-serif: Roboto Slab;
-  --font-mono: Roboto Mono;
+  --font-mono: JetBrains Mono;
 }
 
 @theme {
