@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crowe Code - 3D Animated Logo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(ellipse at center, #1a1f3a 0%, #0a0e27 100%);
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            perspective: 1500px;
+        }
+
+        /* Scene container with 3D space */
+        .scene {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            transform-style: preserve-3d;
+            animation: scene-rotate 60s linear infinite;
+        }
+
+        @keyframes scene-rotate {
+            0% {
+                transform: rotateY(0deg);
+            }
+            100% {
+                transform: rotateY(360deg);
+            }
+        }
+
+        /* Pause rotation on hover for interaction */
+        .scene:hover {
+            animation-play-state: paused;
+        }
+
+        .container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+        }
+
+        /* 3D Cube grid background */
+        .cube-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        .cube {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            transform-style: preserve-3d;
+            animation: cube-float 5s ease-in-out infinite;
+            animation-delay: calc(var(--cube-delay) * 0.1s);
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            background: rgba(100, 200, 255, 0.05);
+        }
+
+        .cube-face.front  { transform: translateZ(20px); }
+        .cube-face.back   { transform: translateZ(-20px) rotateY(180deg); }
+        .cube-face.right  { transform: rotateY(90deg) translateZ(20px); }
+        .cube-face.left   { transform: rotateY(-90deg) translateZ(20px); }
+        .cube-face.top    { transform: rotateX(90deg) translateZ(20px); }
+        .cube-face.bottom { transform: rotateX(-90deg) translateZ(20px); }
+
+        @keyframes cube-float {
+            0%, 100% {
+                transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translate3d(
+                    calc(var(--float-x) * 50px),
+                    calc(var(--float-y) * 50px),
+                    calc(var(--float-z) * 50px)
+                ) rotateX(180deg) rotateY(180deg);
+                opacity: 0.8;
+            }
+        }
+
+        /* Main logo container with 3D transforms */
+        .logo-container {
+            position: relative;
+            transform-style: preserve-3d;
+            animation: logo-orbit 30s linear infinite;
+        }
+
+        @keyframes logo-orbit {
+            0% {
+                transform: rotateY(0deg);
+            }
+            100% {
+                transform: rotateY(-360deg);
+            }
+        }
+
+        .logo-container:hover {
+            animation-play-state: paused;
+        }
+
+        .logo-3d {
+            display: flex;
+            gap: 20px;
+            font-size: 90px;
+            font-weight: 700;
+            letter-spacing: 12px;
+            transform-style: preserve-3d;
+        }
+
+        /* 3D letter with depth */
+        .letter-3d {
+            position: relative;
+            display: inline-block;
+            transform-style: preserve-3d;
+            animation:
+                materialize 2.5s ease-out forwards,
+                levitate 5s ease-in-out infinite;
+            animation-delay:
+                calc(var(--index) * 0.12s),
+                calc(var(--index) * 0.12s + 2.5s);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .letter-3d:hover {
+            transform: translateZ(100px) scale(1.2);
+        }
+
+        /* Front face of 3D letter */
+        .letter-front {
+            position: relative;
+            color: #64c8ff;
+            text-shadow:
+                0 0 20px rgba(100, 200, 255, 1),
+                0 0 40px rgba(100, 200, 255, 0.8),
+                0 0 60px rgba(100, 200, 255, 0.6),
+                0 0 80px rgba(100, 200, 255, 0.4);
+            transform: translateZ(25px);
+        }
+
+        /* Extruded layers creating 3D depth */
+        .letter-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: #3a7fa0;
+            opacity: 0.8;
+        }
+
+        /* Materialize animation - building from particles */
+        @keyframes materialize {
+            0% {
+                opacity: 0;
+                transform:
+                    translate3d(
+                        calc(var(--spawn-x) * 300px),
+                        calc(var(--spawn-y) * 300px),
+                        calc(var(--spawn-z) * 300px)
+                    )
+                    rotateX(calc(var(--spawn-x) * 360deg))
+                    rotateY(calc(var(--spawn-y) * 360deg))
+                    rotateZ(calc(var(--spawn-z) * 360deg))
+                    scale(0.1);
+                filter: blur(20px);
+            }
+            70% {
+                filter: blur(0);
+            }
+            100% {
+                opacity: 1;
+                transform: translate3d(0, 0, 0) rotateX(0) rotateY(0) rotateZ(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        /* Levitate animation */
+        @keyframes levitate {
+            0%, 100% {
+                transform: translateY(0) translateZ(0) rotateX(0deg);
+            }
+            25% {
+                transform: translateY(-15px) translateZ(20px) rotateX(5deg);
+            }
+            50% {
+                transform: translateY(0) translateZ(40px) rotateX(0deg);
+            }
+            75% {
+                transform: translateY(15px) translateZ(20px) rotateX(-5deg);
+            }
+        }
+
+        /* Energy particles orbiting letters */
+        .energy-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00ffff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            animation: orbit 3s linear infinite;
+            animation-delay: calc(var(--particle-delay) * 0.1s);
+            transform-origin: 50px 50px;
+        }
+
+        @keyframes orbit {
+            0% {
+                transform:
+                    rotateY(0deg)
+                    rotateX(calc(var(--orbit-x) * 90deg))
+                    translateX(50px)
+                    rotateY(0deg);
+                opacity: 0;
+            }
+            10%, 90% {
+                opacity: 1;
+            }
+            100% {
+                transform:
+                    rotateY(360deg)
+                    rotateX(calc(var(--orbit-x) * 90deg))
+                    translateX(50px)
+                    rotateY(-360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Holographic scan lines */
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(0, 255, 255, 0.8) 50%,
+                transparent 100%);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+            animation: scan 4s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% {
+                top: -2px;
+                opacity: 0;
+            }
+            10%, 90% {
+                opacity: 1;
+            }
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        /* Data stream effect */
+        .data-stream {
+            position: absolute;
+            width: 2px;
+            background: linear-gradient(180deg,
+                transparent 0%,
+                rgba(100, 200, 255, 1) 50%,
+                transparent 100%);
+            animation: stream 3s linear infinite;
+            animation-delay: calc(var(--stream-delay) * 0.2s);
+        }
+
+        @keyframes stream {
+            0% {
+                height: 0;
+                top: 0;
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            50% {
+                height: 200px;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                height: 0;
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        /* Subtitle with 3D effect */
+        .subtitle-3d {
+            position: absolute;
+            bottom: 25%;
+            font-size: 24px;
+            color: #64c8ff;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: subtitle-appear 1.5s ease-out forwards;
+            animation-delay: 3s;
+            transform-style: preserve-3d;
+            text-shadow:
+                0 0 10px rgba(100, 200, 255, 0.8),
+                0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes subtitle-appear {
+            0% {
+                opacity: 0;
+                transform: translateY(50px) translateZ(-100px);
+            }
+            100% {
+                opacity: 0.9;
+                transform: translateY(0) translateZ(0);
+            }
+        }
+
+        /* Loading progress bar */
+        .progress-container {
+            position: absolute;
+            bottom: 15%;
+            width: 400px;
+            height: 3px;
+            background: rgba(100, 200, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            opacity: 0;
+            animation: progress-appear 0.5s ease-out forwards;
+            animation-delay: 0.5s;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg,
+                rgba(100, 200, 255, 0.6),
+                rgba(0, 255, 255, 1),
+                rgba(100, 200, 255, 0.6));
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+            animation: progress-fill 2s ease-out forwards;
+            animation-delay: 0.5s;
+            transform-origin: left;
+        }
+
+        @keyframes progress-appear {
+            to { opacity: 1; }
+        }
+
+        @keyframes progress-fill {
+            0% { transform: scaleX(0); }
+            100% { transform: scaleX(1); }
+        }
+
+        /* System status indicators */
+        .status-panel {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            font-size: 12px;
+            color: #64c8ff;
+            opacity: 0;
+            animation: fade-in 1s ease-out forwards;
+            animation-delay: 3s;
+            font-family: 'Courier New', monospace;
+            text-align: right;
+            line-height: 1.8;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff00;
+            box-shadow: 0 0 10px #00ff00;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        @keyframes fade-in {
+            to { opacity: 0.7; }
+        }
+
+        /* Version info */
+        .version-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 10px;
+            color: rgba(100, 200, 255, 0.5);
+            font-family: 'Courier New', monospace;
+            opacity: 0;
+            animation: fade-in 1s ease-out forwards;
+            animation-delay: 4s;
+        }
+
+        /* Wireframe overlay */
+        .wireframe {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .wireframe-line {
+            position: absolute;
+            background: #64c8ff;
+            animation: wireframe-pulse 4s ease-in-out infinite;
+            animation-delay: calc(var(--wire-delay) * 0.2s);
+        }
+
+        @keyframes wireframe-pulse {
+            0%, 100% {
+                opacity: 0.1;
+                box-shadow: 0 0 5px rgba(100, 200, 255, 0.3);
+            }
+            50% {
+                opacity: 0.3;
+                box-shadow: 0 0 15px rgba(100, 200, 255, 0.6);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scene">
+        <div class="container">
+            <!-- 3D Cube grid -->
+            <div class="cube-grid" id="cubeGrid"></div>
+
+            <!-- Wireframe overlay -->
+            <div class="wireframe" id="wireframe"></div>
+
+            <!-- Data streams -->
+            <div id="dataStreams"></div>
+
+            <!-- Main 3D logo -->
+            <div class="logo-container">
+                <div class="logo-3d" id="logo3d"></div>
+                <div class="scan-line"></div>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="progress-container">
+                <div class="progress-bar"></div>
+            </div>
+
+            <!-- Subtitle -->
+            <div class="subtitle-3d">Engineering Excellence</div>
+
+            <!-- System status -->
+            <div class="status-panel">
+                <div class="status-item">
+                    <span>SYSTEM ONLINE</span>
+                    <div class="status-dot"></div>
+                </div>
+                <div class="status-item">
+                    <span>AI DEVOPS ACTIVE</span>
+                    <div class="status-dot"></div>
+                </div>
+                <div class="status-item">
+                    <span>DEPLOYMENT READY</span>
+                    <div class="status-dot"></div>
+                </div>
+            </div>
+
+            <!-- Version info -->
+            <div class="version-info">
+                CROWE CODE v1.0.0 | BUILD 20251109 | STATUS: OPERATIONAL
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const logoText = "CROWE CODE";
+
+        // Initialize 3D logo
+        function initialize3DLogo() {
+            const logo = document.getElementById('logo3d');
+            const letters = logoText.split('');
+
+            letters.forEach((letter, index) => {
+                if (letter === ' ') {
+                    // Add space
+                    const space = document.createElement('span');
+                    space.style.width = '40px';
+                    logo.appendChild(space);
+                    return;
+                }
+
+                const letterContainer = document.createElement('div');
+                letterContainer.className = 'letter-3d';
+                letterContainer.style.setProperty('--index', index);
+
+                // Random spawn positions for materialization
+                const spawnX = (Math.random() - 0.5) * 2;
+                const spawnY = (Math.random() - 0.5) * 2;
+                const spawnZ = (Math.random() - 0.5) * 2;
+                letterContainer.style.setProperty('--spawn-x', spawnX);
+                letterContainer.style.setProperty('--spawn-y', spawnY);
+                letterContainer.style.setProperty('--spawn-z', spawnZ);
+
+                // Create front face
+                const front = document.createElement('div');
+                front.className = 'letter-front';
+                front.textContent = letter;
+                letterContainer.appendChild(front);
+
+                // Create depth layers
+                for (let i = 1; i <= 20; i++) {
+                    const layer = document.createElement('div');
+                    layer.className = 'letter-layer';
+                    layer.textContent = letter;
+                    layer.style.transform = `translateZ(${25 - i}px)`;
+                    layer.style.opacity = 0.8 - (i * 0.03);
+                    letterContainer.appendChild(layer);
+                }
+
+                // Add energy particles orbiting each letter
+                for (let i = 0; i < 3; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'energy-particle';
+                    particle.style.setProperty('--particle-delay', i * 3);
+                    particle.style.setProperty('--orbit-x', Math.random());
+                    letterContainer.appendChild(particle);
+                }
+
+                logo.appendChild(letterContainer);
+            });
+        }
+
+        // Create 3D cube grid
+        function create3DCubeGrid() {
+            const grid = document.getElementById('cubeGrid');
+            const cubeCount = 20;
+
+            for (let i = 0; i < cubeCount; i++) {
+                const cube = document.createElement('div');
+                cube.className = 'cube';
+
+                // Random position in 3D space
+                const x = (Math.random() - 0.5) * window.innerWidth;
+                const y = (Math.random() - 0.5) * window.innerHeight;
+                const z = (Math.random() - 0.5) * 500;
+
+                cube.style.left = `${window.innerWidth / 2 + x}px`;
+                cube.style.top = `${window.innerHeight / 2 + y}px`;
+                cube.style.transform = `translateZ(${z}px)`;
+                cube.style.setProperty('--cube-delay', i);
+                cube.style.setProperty('--float-x', Math.random() - 0.5);
+                cube.style.setProperty('--float-y', Math.random() - 0.5);
+                cube.style.setProperty('--float-z', Math.random() - 0.5);
+
+                // Create cube faces
+                ['front', 'back', 'right', 'left', 'top', 'bottom'].forEach(face => {
+                    const faceDiv = document.createElement('div');
+                    faceDiv.className = `cube-face ${face}`;
+                    cube.appendChild(faceDiv);
+                });
+
+                grid.appendChild(cube);
+            }
+        }
+
+        // Create data streams
+        function createDataStreams() {
+            const container = document.getElementById('dataStreams');
+            const streamCount = 30;
+
+            for (let i = 0; i < streamCount; i++) {
+                const stream = document.createElement('div');
+                stream.className = 'data-stream';
+                stream.style.left = `${Math.random() * 100}%`;
+                stream.style.setProperty('--stream-delay', i);
+                container.appendChild(stream);
+            }
+        }
+
+        // Create wireframe overlay
+        function createWireframe() {
+            const wireframe = document.getElementById('wireframe');
+            const lineCount = 20;
+
+            for (let i = 0; i < lineCount; i++) {
+                const line = document.createElement('div');
+                line.className = 'wireframe-line';
+
+                const isHorizontal = i % 2 === 0;
+
+                if (isHorizontal) {
+                    line.style.width = '100%';
+                    line.style.height = '1px';
+                    line.style.top = `${(i / lineCount) * 100}%`;
+                } else {
+                    line.style.width = '1px';
+                    line.style.height = '100%';
+                    line.style.left = `${(i / lineCount) * 100}%`;
+                }
+
+                line.style.setProperty('--wire-delay', i);
+                wireframe.appendChild(line);
+            }
+        }
+
+        // Enhanced mouse interaction with 3D
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+            const mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+
+            const scene = document.querySelector('.scene');
+            const container = document.querySelector('.logo-container');
+
+            // Rotate scene based on mouse
+            scene.style.transform = `
+                rotateY(${mouseX * 15}deg)
+                rotateX(${-mouseY * 15}deg)
+            `;
+
+            // Individual letter reactions
+            const letters = document.querySelectorAll('.letter-3d');
+            letters.forEach((letter, index) => {
+                const offset = (index - letters.length / 2) * 0.05;
+                const x = mouseX * 30 * (1 + offset);
+                const y = mouseY * 30 * (1 + offset);
+                const z = Math.abs(mouseX) * 20;
+
+                letter.style.transform = `
+                    translate3d(${x}px, ${y}px, ${z}px)
+                    rotateY(${mouseX * 10}deg)
+                    rotateX(${-mouseY * 10}deg)
+                `;
+            });
+        });
+
+        // Reset on mouse leave
+        document.addEventListener('mouseleave', () => {
+            const scene = document.querySelector('.scene');
+            scene.style.transform = 'rotateY(0deg) rotateX(0deg)';
+
+            const letters = document.querySelectorAll('.letter-3d');
+            letters.forEach(letter => {
+                letter.style.transform = '';
+            });
+        });
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            initialize3DLogo();
+            create3DCubeGrid();
+            createDataStreams();
+            createWireframe();
+        });
+    </script>
+</body>
+</html>
