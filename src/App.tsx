@@ -210,9 +210,7 @@ function App() {
             {sidebarVisible ? <Sidebar className="h-5 w-5" /> : <List className="h-5 w-5" />}
           </Button>
           <h1 className="text-sm font-semibold text-slate-50 border-cyan-300">Crowe Code</h1>
-          <Badge variant="default" className="text-xs bg-gradient-to-r from-purple-500 to-pink-500 border-0">
-            REVOLUTIONARY
-          </Badge>
+          <Badge variant="default" className="text-xs bg-gradient-to-r from-purple-500 to-pink-500 border-0"></Badge>
         </div>
         <div className="flex items-center gap-2">
           <div className="text-xs text-muted-foreground hidden sm:block">
