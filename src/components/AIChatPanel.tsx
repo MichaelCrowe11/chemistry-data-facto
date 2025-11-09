@@ -3,7 +3,8 @@ import { useKV } from '@github/spark/hooks'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
-import { X, PaperPlaneTilt, Code, Sparkle, Copy, Check } from '@phosphor-icons/react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { X, PaperPlaneTilt, Code, Sparkle, Copy, Check, Brain } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 
@@ -124,8 +125,15 @@ ${contextPrompt}`
     <div className="flex flex-col h-full bg-[var(--sidebar-bg)] border-l border-border">
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <Sparkle className="h-5 w-5 text-accent" weight="fill" />
-          <h2 className="text-sm font-semibold">AI Assistant</h2>
+          <Avatar className="h-7 w-7">
+            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-600">
+              <Brain className="h-4 w-4 text-white" weight="fill" />
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col">
+            <h2 className="text-sm font-semibold">Crowe Logic</h2>
+            <span className="text-xs text-muted-foreground">AI Assistant</span>
+          </div>
         </div>
         <div className="flex items-center gap-1">
           <Button
