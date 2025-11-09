@@ -5,10 +5,11 @@ interface CodeEditorProps {
   content: string
   onChange: (content: string) => void
   onCursorChange: (line: number, column: number) => void
+  onSelectionChange?: (selection: string) => void
   language: string
 }
 
-export function CodeEditor({ content, onChange, onCursorChange, language }: CodeEditorProps) {
+export function CodeEditor({ content, onChange, onCursorChange, onSelectionChange, language }: CodeEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [lineCount, setLineCount] = useState(1)
 
@@ -43,6 +44,11 @@ export function CodeEditor({ content, onChange, onCursorChange, language }: Code
     const line = lines.length
     const column = lines[lines.length - 1].length + 1
     onCursorChange(line, column)
+
+    if (onSelectionChange) {
+      const selectedText = textarea.value.substring(textarea.selectionStart, textarea.selectionEnd)
+      onSelectionChange(selectedText)
+    }
   }
 
   const lineNumbers = Array.from({ length: lineCount }, (_, i) => i + 1)

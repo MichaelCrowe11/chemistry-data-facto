@@ -61,6 +61,48 @@ A code editing interface with file management, syntax highlighting, and customiz
 - **Progression**: Click share → Modal opens → Copy link → Share with others
 - **Success criteria**: Link copies successfully, shows workspace stats, clear owner indicators
 
+### AI Code Completion (NEW - State-of-the-Art)
+- **Functionality**: Inline AI-powered code suggestions as you type, similar to GitHub Copilot
+- **Purpose**: Accelerate coding with intelligent, context-aware completions
+- **Trigger**: User types code in editor, pauses briefly
+- **Progression**: Type code → AI analyzes context → Suggestions appear in gray → Press Tab to accept → Code inserted
+- **Success criteria**: Suggestions appear within 500ms, accuracy >70%, context-aware, multi-line support
+
+### AI Code Explanation (NEW - State-of-the-Art)
+- **Functionality**: Select code and get AI-generated explanations in natural language
+- **Purpose**: Help developers understand complex code, learn new patterns
+- **Trigger**: User selects code and clicks "Explain" or uses keyboard shortcut (Cmd/Ctrl+E)
+- **Progression**: Select code → Trigger explain → AI analyzes → Explanation appears in side panel
+- **Success criteria**: Explanation clear, accurate, includes examples, shows in <2s
+
+### AI Code Refactor (NEW - State-of-the-Art)
+- **Functionality**: AI suggests and applies code improvements (performance, readability, best practices)
+- **Purpose**: Improve code quality with smart refactoring suggestions
+- **Trigger**: User selects code, clicks "Refactor" button or uses Cmd/Ctrl+R
+- **Progression**: Select code → Request refactor → AI suggests improvements → Preview diff → Accept/reject changes
+- **Success criteria**: Suggestions maintain functionality, improve quality, show before/after diff
+
+### AI Bug Detection (NEW - State-of-the-Art)
+- **Functionality**: Real-time AI analysis to detect potential bugs, security issues, and anti-patterns
+- **Purpose**: Catch errors before running code, improve code security
+- **Trigger**: User saves file or triggers manual scan
+- **Progression**: Write code → Save → AI scans → Issues highlighted → Click for details → Suggested fixes
+- **Success criteria**: Detects common bugs, security vulnerabilities, performance issues with explanations
+
+### AI Code Generation from Comments (NEW - State-of-the-Art)
+- **Functionality**: Write natural language comments, AI generates implementation
+- **Purpose**: Rapidly prototype functionality from descriptions
+- **Trigger**: User writes comment describing desired function, uses Cmd/Ctrl+Shift+G
+- **Progression**: Write comment "// Create function that sorts array by date" → Trigger generate → AI creates implementation → Review and accept
+- **Success criteria**: Generated code matches intent, follows project patterns, includes proper types
+
+### AI Chat Assistant (NEW - State-of-the-Art)
+- **Functionality**: Chat panel with AI assistant for coding help, debugging, architecture advice
+- **Purpose**: Provide on-demand coding assistance without leaving the editor
+- **Trigger**: User clicks AI chat icon or presses Cmd/Ctrl+K
+- **Progression**: Open chat → Ask question → AI responds with code/explanation → Apply suggestions directly to files
+- **Success criteria**: Context-aware of open files, can reference code, provides actionable answers
+
 ## Edge Case Handling
 
 - **Unauthenticated Users** - Show loading state during auth, fallback UI if auth fails

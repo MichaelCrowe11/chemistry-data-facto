@@ -9,8 +9,11 @@ import { WelcomeScreen } from '@/components/WelcomeScreen'
 import { UserProfile } from '@/components/UserProfile'
 import { SettingsDialog } from '@/components/SettingsDialog'
 import { ShareWorkspace } from '@/components/ShareWorkspace'
+import { AIChatPanel } from '@/components/AIChatPanel'
+import { AICodeActions } from '@/components/AICodeActions'
+import { KeyboardShortcuts } from '@/components/KeyboardShortcuts'
 import { detectLanguage, generateId } from '@/lib/editor-utils'
-import { Sidebar, List } from '@phosphor-icons/react'
+import { Sidebar, List, Sparkle, Selection } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 
@@ -22,6 +25,8 @@ function App() {
   const [openTabs, setOpenTabs] = useKV<EditorTab[]>(`crowe-code-tabs-${userId}`, [])
   const [activeTabId, setActiveTabId] = useKV<string | null>(`crowe-code-active-tab-${userId}`, null)
   const [sidebarVisible, setSidebarVisible] = useState(true)
+  const [aiChatVisible, setAiChatVisible] = useState(false)
+  const [selectedCode, setSelectedCode] = useState('')
 
   const safeFiles = files || []
   const safeOpenTabs = openTabs || []
@@ -129,6 +134,10 @@ function App() {
     )
   }, [safeActiveTabId, setOpenTabs])
 
+  const handleSelectionChange = useCallback((selection: string) => {
+    setSelectedCode(selection)
+  }, [])
+
   const saveCurrentFile = useCallback(() => {
     if (!activeTab) return
 
@@ -170,6 +179,10 @@ function App() {
         e.preventDefault()
         setSidebarVisible(prev => !prev)
       }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        setAiChatVisible(prev => !prev)
+      }
     }
 
     window.addEventListener('keydown', handleKeyboard)
@@ -192,10 +205,20 @@ function App() {
         </div>
         <div className="flex items-center gap-2">
           <div className="text-xs text-muted-foreground hidden sm:block">
-            v2.0.36
+            v3.0.0 AI
           </div>
           {userId && (
             <>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setAiChatVisible(!aiChatVisible)}
+                className="h-8 w-8"
+                title="AI Assistant (Cmd/Ctrl+K)"
+              >
+                <Sparkle className="h-5 w-5" weight={aiChatVisible ? 'fill' : 'regular'} />
+              </Button>
+              <KeyboardShortcuts />
               <ShareWorkspace isOwner={isOwner} fileCount={safeFiles.length} />
               <SettingsDialog userId={userId} />
             </>
@@ -231,22 +254,60 @@ function App() {
             onTabClose={handleTabClose}
           />
 
-          <div className="flex-1 overflow-hidden bg-slate-50 text-slate-950 border-slate-950 font-thin text-xs">
-            {activeTab ? (
-              <CodeEditor
-                content={activeTab.content}
-                onChange={handleContentChange}
-                onCursorChange={handleCursorChange}
-                language={activeTab.language}
-              />
-            ) : (
-              <WelcomeScreen 
-                onCreateFile={() => {
-                  const fileName = prompt('Enter file name:')
-                  if (fileName) handleFileCreate(fileName)
-                }}
-                userName={userName}
-              />
+          <div className="flex-1 flex overflow-hidden">
+            <div className="flex-1 overflow-hidden bg-slate-50 text-slate-950 border-slate-950 font-thin text-xs relative">
+              {activeTab ? (
+                <>
+                  <div className="absolute top-2 right-2 z-10 flex gap-2">
+                    {selectedCode && (
+                      <AICodeActions
+                        selectedCode={selectedCode}
+                        language={activeTab.language}
+                        onApplyCode={(code) => {
+                          handleContentChange(code)
+                        }}
+                      />
+                    )}
+                  </div>
+                  <CodeEditor
+                    content={activeTab.content}
+                    onChange={handleContentChange}
+                    onCursorChange={handleCursorChange}
+                    onSelectionChange={handleSelectionChange}
+                    language={activeTab.language}
+                  />
+                </>
+              ) : (
+                <WelcomeScreen 
+                  onCreateFile={() => {
+                    const fileName = prompt('Enter file name:')
+                    if (fileName) handleFileCreate(fileName)
+                  }}
+                  userName={userName}
+                />
+              )}
+            </div>
+
+            {aiChatVisible && (
+              <div className="w-96 shrink-0">
+                <AIChatPanel
+                  onClose={() => setAiChatVisible(false)}
+                  currentFile={
+                    activeTab
+                      ? {
+                          name: activeTab.fileName,
+                          content: activeTab.content,
+                          language: activeTab.language,
+                        }
+                      : undefined
+                  }
+                  onApplyCode={(code) => {
+                    if (activeTab) {
+                      handleContentChange(code)
+                    }
+                  }}
+                />
+              </div>
             )}
           </div>
         </div>
