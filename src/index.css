@@ -48,7 +48,7 @@
   --tab-inactive-bg: oklch(0.18 0.01 240);
   --spacing: 0.20rem;
   --font-sans: IBM Plex Sans;
-  --font-serif: Roboto Slab;
+  --font-serif: IBM Plex Serif;
   --font-mono: JetBrains Mono;
 }
 

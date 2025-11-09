@@ -47,15 +47,12 @@ When helping users:
 5. Suggest improvements and optimizations`
 
       const response = await generateText({
-        model: openai(model, {
-          apiKey: this.apiKey,
-        }),
+        model: openai(model),
         messages: [
           { role: 'system', content: systemPrompt },
           ...messages
         ],
         temperature: 0.7,
-        maxTokens: 2000,
       })
 
       return response.text

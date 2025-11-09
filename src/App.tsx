@@ -18,8 +18,12 @@ import { AIPredictionPanel } from '@/components/AIPredictionPanel'
 import { CodeComplexityVisualizer } from '@/components/CodeComplexityVisualizer'
 import { CollaborativeAIPairProgrammer } from '@/components/CollaborativeAIPairProgrammer'
 import { PerformanceProfiler } from '@/components/PerformanceProfiler'
+import { QuantumSynthesisPanel } from '@/components/QuantumSynthesisPanel'
+import { CodeDNASequencer } from '@/components/CodeDNASequencer'
+import { HolographicCodeViz } from '@/components/HolographicCodeViz'
+import { SentientDebugger } from '@/components/SentientDebugger'
 import { detectLanguage, generateId } from '@/lib/editor-utils'
-import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer } from '@phosphor-icons/react'
+import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
@@ -34,7 +38,7 @@ function App() {
   const [sidebarVisible, setSidebarVisible] = useState(true)
   const [aiChatVisible, setAiChatVisible] = useState(false)
   const [selectedCode, setSelectedCode] = useState('')
-  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | null>('execution')
+  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | null>('execution')
 
   const safeFiles = files || []
   const safeOpenTabs = openTabs || []
@@ -210,11 +214,11 @@ function App() {
             {sidebarVisible ? <Sidebar className="h-5 w-5" /> : <List className="h-5 w-5" />}
           </Button>
           <h1 className="text-sm font-semibold text-slate-50 border-cyan-300">Crowe Code</h1>
-          <Badge variant="default" className="text-xs bg-gradient-to-r from-purple-500 to-pink-500 border-0"></Badge>
+          <Badge variant="default" className="text-xs bg-gradient-to-r from-purple-500 to-pink-500 border-0">Quantum AI</Badge>
         </div>
         <div className="flex items-center gap-2">
           <div className="text-xs text-muted-foreground hidden sm:block">
-            v4.0.0 Revolutionary AI
+            v5.0.0 Quantum Evolution
           </div>
           {userId && (
             <>
@@ -271,6 +275,42 @@ function App() {
                 title="Performance Profiler"
               >
                 <Speedometer className="h-5 w-5" weight={rightPanel === 'performance' ? 'fill' : 'regular'} />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setRightPanel(rightPanel === 'quantum' ? null : 'quantum')}
+                className="h-8 w-8"
+                title="Quantum Synthesis"
+              >
+                <Atom className="h-5 w-5" weight={rightPanel === 'quantum' ? 'fill' : 'regular'} />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setRightPanel(rightPanel === 'dna' ? null : 'dna')}
+                className="h-8 w-8"
+                title="Code DNA Sequencer"
+              >
+                <Dna className="h-5 w-5" weight={rightPanel === 'dna' ? 'fill' : 'regular'} />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setRightPanel(rightPanel === 'holographic' ? null : 'holographic')}
+                className="h-8 w-8"
+                title="Holographic Code 3D"
+              >
+                <Cube className="h-5 w-5" weight={rightPanel === 'holographic' ? 'fill' : 'regular'} />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setRightPanel(rightPanel === 'sentient' ? null : 'sentient')}
+                className="h-8 w-8 bg-gradient-to-r from-purple-500/20 to-pink-500/20"
+                title="Sentient Debugger (Revolutionary)"
+              >
+                <Brain className="h-5 w-5 text-purple-400" weight={rightPanel === 'sentient' ? 'fill' : 'regular'} />
               </Button>
               <Button
                 size="icon"
@@ -419,6 +459,60 @@ function App() {
                   isRunning={false}
                   onOptimize={(line) => {
                     toast.info(`Analyzing line ${line} for optimization...`)
+                  }}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'quantum' && (
+              <div className="w-96 shrink-0">
+                <QuantumSynthesisPanel
+                  onCodeGenerated={(code) => {
+                    if (activeTab) {
+                      handleContentChange(activeTab.content + '\n\n' + code)
+                    } else {
+                      const fileName = prompt('Create new file for generated code:')
+                      if (fileName) {
+                        handleFileCreate(fileName)
+                      }
+                    }
+                  }}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'dna' && activeTab && (
+              <div className="w-96 shrink-0">
+                <CodeDNASequencer
+                  code={activeTab.content}
+                  language={activeTab.language}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'holographic' && activeTab && (
+              <div className="w-96 shrink-0">
+                <HolographicCodeViz
+                  code={activeTab.content}
+                  language={activeTab.language}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'sentient' && activeTab && (
+              <div className="w-96 shrink-0">
+                <SentientDebugger
+                  code={activeTab.content}
+                  language={activeTab.language}
+                  cursorPosition={activeTab.cursorPosition}
+                  onSuggestFix={(lineNumber, suggestion) => {
+                    toast.info(
+                      <div>
+                        <div className="font-semibold">Suggested fix for line {lineNumber}:</div>
+                        <div className="text-xs mt-1">{suggestion}</div>
+                      </div>,
+                      { duration: 8000 }
+                    )
                   }}
                 />
               </div>
