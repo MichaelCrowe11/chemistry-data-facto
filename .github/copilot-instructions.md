@@ -20,6 +20,7 @@ Purpose: Enable AI coding agents to make correct, fast changes in this repo with
 - Types live in `src/types/*` (e.g., `EditorTab`, `FileItem`, chemistry DTOs). Keep API contracts aligned with these.
 
 ## Build/run/lint
+- Quickstart: `./quickstart.sh` (installs deps if needed, then runs dev). Variants: `./quickstart.sh build|preview|lint`.
 - Dev: `npm run dev` (Vite). Entry mounts to `#root` in `index.html`.
 - Build: `npm run build` (TS build with `--noCheck` + Vite bundle).
 - Preview: `npm run preview`.
@@ -54,3 +55,8 @@ References
 - API: `src/lib/api.ts`, `src/types/chemistry.ts`
 - UI: `src/components/*`, `src/components/ui/*`
 - Tooling: `vite.config.ts`, `tsconfig.json`, `tailwind.config.js`, `theme.json`
+
+## Quick examples
+- Add a KV-backed setting: `const [theme, setTheme] = useKV<string>("crowe-code-theme-${userId}", "dark")` in a component; include `${userId}` in the key and wire controls in `SettingsDialog`.
+- New API helper: Add a typed method to `src/lib/api.ts` building `URLSearchParams`, fetch, `if (!res.ok) throw`, and return `Promise<MyType>` from `src/types/*`.
+- Keyboard shortcut: In `src/App.tsx` augment the `keydown` handler inside `useEffect`; always `preventDefault()` and clean up the listener on unmount.
