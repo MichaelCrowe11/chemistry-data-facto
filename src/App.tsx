@@ -209,7 +209,6 @@ function App() {
           />
         </div>
       </div>
-
       <div className="flex-1 flex overflow-hidden">
         {sidebarVisible && (
           <div className="w-64 shrink-0">
@@ -232,7 +231,7 @@ function App() {
             onTabClose={handleTabClose}
           />
 
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden bg-slate-50 text-slate-950 border-slate-950 font-thin text-base">
             {activeTab ? (
               <CodeEditor
                 content={activeTab.content}
@@ -252,10 +251,9 @@ function App() {
           </div>
         </div>
       </div>
-
       <StatusBar activeTab={activeTab} />
     </div>
-  )
+  );
 }
 
 export default App
