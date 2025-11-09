@@ -1,122 +1,122 @@
-# Chemistry Data Factory Dashboard - PRD
+# Crowe Code - PRD
 
-A sophisticated web interface for exploring and visualizing chemistry knowledge from the comprehensive chemistry data factory backend.
+A modern, web-based code editor inspired by VS Code, designed for elegant code editing with a professional developer experience.
 
 **Experience Qualities:**
-1. **Scientific** - Clean, data-focused interface that feels like a professional research tool
-2. **Intuitive** - Complex chemistry data made accessible through thoughtful information architecture
-3. **Performant** - Responsive interactions with large datasets through efficient queries and virtualization
+1. **Professional** - Clean, focused interface that feels like a mature development tool
+2. **Responsive** - Instant feedback and smooth interactions that don't interrupt flow
+3. **Intuitive** - Familiar patterns for developers while adding thoughtful improvements
 
 **Complexity Level:** Light Application (multiple features with basic state)
-This is a data exploration and visualization interface connecting to an existing REST API backend with compound search, reaction browsing, and literature discovery features.
+A code editing interface with file management, syntax highlighting, and customizable panels. Focuses on single-session editing with browser-based persistence.
 
 ## Essential Features
 
-### Compound Search & Exploration
-- **Functionality**: Search compounds by name, formula, SMILES, molecular weight range
-- **Purpose**: Enable researchers to quickly find specific compounds or browse chemical space
-- **Trigger**: User enters search criteria in compound search interface
-- **Progression**: Enter query → API request → Results display in cards → Click compound → Detailed view with properties, reactions, literature
-- **Success criteria**: Results display within 500ms, all compound properties visible, structure rendering works
+### Code Editor Panel
+- **Functionality**: Full-featured text editor with syntax highlighting, line numbers, and tab support
+- **Purpose**: Enable developers to write and edit code comfortably in the browser
+- **Trigger**: User opens application or creates/opens a file
+- **Progression**: Load editor → Type code → See syntax highlighting → Save changes persist
+- **Success criteria**: Typing feels instant (<50ms), syntax highlighting accurate, content persists between sessions
 
-### Reaction Browser
-- **Functionality**: Browse and filter chemical reactions by yield, reaction class, conditions
-- **Purpose**: Discover high-performing reactions and experimental conditions
-- **Trigger**: User navigates to reactions tab or filters reaction list
-- **Progression**: View reaction list → Apply filters (yield, class, temperature) → See filtered results → Click reaction → View full details with reactants/products
-- **Success criteria**: Filter updates are instant, yield sorting works correctly, reaction schemes display clearly
+### File Explorer Sidebar
+- **Functionality**: Tree view of files and folders with create/rename/delete operations
+- **Purpose**: Organize and navigate between multiple files
+- **Trigger**: User views sidebar or clicks file tree icon
+- **Progression**: View file tree → Click file → Opens in editor → Create new file → Appears in tree
+- **Success criteria**: File operations work correctly, tree updates immediately, selected file highlighted
 
-### Literature Discovery
-- **Functionality**: Search scientific papers, view extracted chemistry knowledge
-- **Purpose**: Connect chemistry data to source literature
-- **Trigger**: User searches literature or views compound/reaction references
-- **Progression**: Enter search query → Results with titles/abstracts → Click paper → View extracted compounds/reactions/properties
-- **Success criteria**: Full-text search works, extracted data displays correctly, citations link properly
+### Multi-Tab Editor
+- **Functionality**: Open multiple files in tabs, switch between them, close tabs
+- **Purpose**: Work with multiple files simultaneously
+- **Trigger**: User opens additional files or clicks tabs
+- **Progression**: Open file → New tab appears → Switch tabs → Content updates → Close tab
+- **Success criteria**: Tab switching instant, unsaved changes indicated, content preserved
 
-### Database Statistics Dashboard
-- **Functionality**: Real-time overview of data factory contents and health
-- **Purpose**: Monitor system status and understand data coverage
-- **Trigger**: User views dashboard home
-- **Progression**: Load dashboard → Display entity counts → Show recent imports → Health status indicators
-- **Success criteria**: All metrics accurate, updates reflect database state, health checks functional
+### Status Bar
+- **Functionality**: Display file info, cursor position, language mode
+- **Purpose**: Provide contextual information about current editor state
+- **Trigger**: User edits code or changes cursor position
+- **Progression**: Edit content → Status updates → Shows line/column → Language detected
+- **Success criteria**: Updates in real-time, information accurate, no lag
 
 ## Edge Case Handling
 
-- **API Unavailable** - Show offline banner, cache last results, retry connection
-- **No Results Found** - Display helpful message with search suggestions, show similar queries
-- **Invalid Chemical Structure** - Validate SMILES/InChI before search, show format examples
-- **Large Result Sets** - Implement virtual scrolling, paginate beyond 100 results
-- **Slow Queries** - Show loading skeletons, allow query cancellation, cache frequent searches
+- **Large Files** - Warn when opening files >1MB, use virtualization for rendering
+- **Unsaved Changes** - Show dot indicator on tab, confirm before closing
+- **Invalid File Names** - Validate on creation, show helpful error messages
+- **Empty States** - Show welcome screen when no files open, helpful getting started tips
+- **Browser Storage Limits** - Warn when approaching quota, allow export to download
 
 ## Design Direction
 
-The design should feel like a modern scientific research platform - professional and data-rich while remaining approachable. Think of the clarity of PubChem combined with the modern UX of Observable notebooks. The interface should prioritize information density without overwhelming users, using progressive disclosure to reveal complexity as needed. Minimal visual ornamentation, maximum focus on the chemistry data itself.
+The design should feel like a professional code editor - dark by default with excellent contrast for long coding sessions. Clean, geometric interface with focus on the code itself. Subtle animations that enhance usability without distraction. Think VS Code's elegance meets a modern web app's responsiveness.
 
 ## Color Selection
 
-Triadic color scheme representing the scientific nature of chemistry with energy and precision.
+Custom dark palette optimized for code readability and reduced eye strain during extended use.
 
-- **Primary Color (Deep Blue #1e40af / oklch(0.45 0.15 264))**: Represents scientific rigor and knowledge - used for primary actions, headers, and key data points. Communicates trust and professionalism.
+- **Primary Color (Soft Blue oklch(0.55 0.15 240))**: Main brand color for interactive elements and highlights. Represents precision and technology.
 - **Secondary Colors**: 
-  - Teal #0d9488 / oklch(0.55 0.12 180) - Supporting color for secondary actions and informational elements
-  - Slate #475569 / oklch(0.40 0.02 250) - Tertiary color for subtle UI elements and backgrounds
-- **Accent Color (Vibrant Amber #f59e0b / oklch(0.72 0.15 70))**: Attention-grabbing highlight for important chemistry data, active states, and successful operations. Represents the energy of chemical reactions.
+  - Dark Gray oklch(0.20 0.01 240) - Main editor background
+  - Medium Gray oklch(0.35 0.01 240) - Sidebar and panel backgrounds
+  - Light Gray oklch(0.65 0.01 240) - Text and icons
+- **Accent Color (Vibrant Teal oklch(0.65 0.15 180))**: Used for active states, selections, and important UI elements. Provides energy against the dark background.
 - **Foreground/Background Pairings**:
-  - Background (White #ffffff / oklch(1 0 0)): Deep Blue text (oklch(0.45 0.15 264)) - Ratio 9.2:1 ✓
-  - Card (Light Gray #f8fafc / oklch(0.99 0 0)): Deep Blue text - Ratio 8.9:1 ✓
-  - Primary (Deep Blue #1e40af): White text (oklch(1 0 0)) - Ratio 9.2:1 ✓
-  - Secondary (Teal #0d9488): White text - Ratio 4.8:1 ✓
-  - Accent (Amber #f59e0b): Black text (oklch(0.2 0 0)) - Ratio 8.1:1 ✓
-  - Muted (Light Slate #f1f5f9): Slate text (oklch(0.40 0.02 250)) - Ratio 7.2:1 ✓
+  - Background (Dark Gray oklch(0.20 0.01 240)): Light Gray text (oklch(0.85 0.01 240)) - Ratio 12.1:1 ✓
+  - Sidebar (Medium Gray oklch(0.25 0.01 240)): Light Gray text (oklch(0.85 0.01 240)) - Ratio 10.8:1 ✓
+  - Primary (Soft Blue oklch(0.55 0.15 240)): White text (oklch(1 0 0)) - Ratio 5.2:1 ✓
+  - Accent (Teal oklch(0.65 0.15 180)): Dark background - Ratio 7.4:1 ✓
+  - Status Bar (Dark Gray oklch(0.18 0.01 240)): Blue text (oklch(0.60 0.12 240)) - Ratio 6.8:1 ✓
 
 ## Font Selection
 
-Typography should convey scientific precision while maintaining excellent readability for long data browsing sessions. Use Inter for its exceptional clarity at all sizes and tabular figure support for numerical data.
+Monospace typography is essential for code editing with clear character distinction and excellent ligature support. Use Fira Code for its exceptional coding ligatures and readability.
 
 - **Typographic Hierarchy**:
-  - H1 (Dashboard Title): Inter Bold/32px/tight letter spacing
-  - H2 (Section Headers): Inter Semibold/24px/normal spacing
-  - H3 (Card Titles): Inter Medium/18px/normal spacing
-  - Body (Data Labels): Inter Regular/14px/relaxed line height 1.6
-  - Data Values: Inter Medium/14px/tabular numbers
-  - Small (Metadata): Inter Regular/12px/muted color
+  - H1 (Welcome Screen): Inter Bold/28px/tight letter spacing
+  - Editor Code: Fira Code Regular/14px/1.6 line height
+  - Sidebar Items: Inter Regular/13px/normal spacing
+  - Tab Labels: Inter Medium/13px/normal spacing
+  - Status Bar: Inter Regular/12px/tabular numbers
+  - Tooltips: Inter Regular/12px/muted color
 
 ## Animations
 
-Animations should be subtle and purposeful, enhancing data comprehension rather than decorating the interface. Transitions should feel instant (< 200ms) while still providing visual continuity during state changes.
+Animations should be minimal and functional, reinforcing spatial relationships and state changes without slowing down the developer workflow.
 
-- **Purposeful Meaning**: Use motion to guide attention to newly loaded data, indicate search progress, and confirm actions. Card entrances stagger slightly to show data relationships.
-- **Hierarchy of Movement**: Primary data (compound structures, reaction schemes) animate smoothly on reveal. Secondary elements (metadata, stats) fade in simply. Background elements remain static.
+- **Purposeful Meaning**: Use subtle motion to show panel expansion/collapse, file tree expansion, and tab switching. Transitions communicate hierarchy - main editor stays stable while panels slide in/out.
+- **Hierarchy of Movement**: Editor content fades quickly (100ms) on file switch. Sidebars slide smoothly (200ms). Tabs highlight instantly. Tooltips appear with slight delay (300ms).
 
 ## Component Selection
 
 - **Components**: 
-  - Card (compound/reaction/paper cards with hover states)
-  - Input (search fields with chemical formula validation)
-  - Tabs (navigation between Compounds/Reactions/Literature)
-  - Badge (reaction classes, compound categories)
-  - Separator (visual grouping of properties)
-  - ScrollArea (virtualized lists for large datasets)
-  - Skeleton (loading states for async data)
-  - Alert (API errors, system status)
+  - Button (toolbar actions with icon-only style)
+  - Tabs (editor file tabs with close buttons)
+  - ScrollArea (file explorer and editor content)
+  - Separator (resizable panels)
+  - Tooltip (icon button labels)
+  - DropdownMenu (file context menus)
+  - Dialog (confirm delete, settings)
+  - Input (file rename, search)
 - **Customizations**: 
-  - MoleculeViewer component (2D structure rendering)
-  - PropertyGrid component (key-value pairs for chemical properties)
-  - ReactionScheme component (reactants → products visualization)
-  - StatCard component (dashboard metrics)
+  - CodeEditor component (Monaco-style editor with line numbers)
+  - FileTree component (collapsible tree with icons)
+  - StatusBar component (bottom info bar)
+  - TabBar component (horizontal tab strip with close)
+  - Sidebar component (collapsible side panel)
 - **States**: 
-  - Search inputs: Default/Focused (blue ring)/Disabled/Error (red border)
-  - Cards: Rest/Hover (elevated shadow + border highlight)/Selected (blue border)
-  - Buttons: Default/Hover (opacity 0.9)/Active (scale 0.98)/Loading (spinner)
-  - Data loading: Skeleton → Fade in content
+  - Buttons: Rest/Hover (background subtle highlight)/Active (background darker)/Disabled (opacity 0.4)
+  - Tabs: Inactive/Active (border top accent color)/Hover (background lighter)/Dirty (dot indicator)
+  - Tree Items: Rest/Hover (background subtle)/Selected (background accent)/Focused (border left)
+  - Editor: Focused (cursor blink)/Selection (background highlight)
 - **Icon Selection**: 
-  - MagnifyingGlass (search)
-  - Flask (compounds)
-  - Lightning (reactions)
-  - BookOpen (literature)
-  - ChartBar (statistics)
-  - Funnel (filters)
-  - X (clear filters)
-  - Check (validation success)
-- **Spacing**: Consistent 16px base unit (4px, 8px, 16px, 24px, 32px, 48px) for padding/margins using Tailwind's spacing scale
-- **Mobile**: Stacked single-column layout on mobile, tab navigation converts to bottom sheet selector, cards maintain full width, data tables scroll horizontally, search becomes modal overlay
+  - Files (file document icon)
+  - Folder/FolderOpen (directory icons)
+  - Plus (new file)
+  - X (close tab)
+  - Code (code brackets)
+  - Settings/Gear (preferences)
+  - Search/MagnifyingGlass (find)
+- **Spacing**: Compact spacing for professional IDE feel - 4px, 8px, 12px, 16px, 24px using Tailwind scale. Sidebar padding 12px, editor padding 16px.
+- **Mobile**: Responsive layout with collapsible sidebar (hamburger menu), full-screen editor on mobile, touch-optimized tab switching, virtual keyboard-aware viewport
