@@ -12,9 +12,16 @@ import { ShareWorkspace } from '@/components/ShareWorkspace'
 import { AIChatPanel } from '@/components/AIChatPanel'
 import { AICodeActions } from '@/components/AICodeActions'
 import { KeyboardShortcuts } from '@/components/KeyboardShortcuts'
+import { LiveExecutionPanel } from '@/components/LiveExecutionPanel'
+import { VisualDebugPanel } from '@/components/VisualDebugPanel'
+import { AIPredictionPanel } from '@/components/AIPredictionPanel'
+import { CodeComplexityVisualizer } from '@/components/CodeComplexityVisualizer'
+import { CollaborativeAIPairProgrammer } from '@/components/CollaborativeAIPairProgrammer'
+import { PerformanceProfiler } from '@/components/PerformanceProfiler'
 import { detectLanguage, generateId } from '@/lib/editor-utils'
-import { Sidebar, List, Sparkle, Selection } from '@phosphor-icons/react'
+import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 
 function App() {
@@ -27,6 +34,7 @@ function App() {
   const [sidebarVisible, setSidebarVisible] = useState(true)
   const [aiChatVisible, setAiChatVisible] = useState(false)
   const [selectedCode, setSelectedCode] = useState('')
+  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | null>('execution')
 
   const safeFiles = files || []
   const safeOpenTabs = openTabs || []
@@ -202,19 +210,76 @@ function App() {
             {sidebarVisible ? <Sidebar className="h-5 w-5" /> : <List className="h-5 w-5" />}
           </Button>
           <h1 className="text-sm font-semibold text-slate-50 border-cyan-300">Crowe Code</h1>
+          <Badge variant="default" className="text-xs bg-gradient-to-r from-purple-500 to-pink-500 border-0">
+            REVOLUTIONARY
+          </Badge>
         </div>
         <div className="flex items-center gap-2">
           <div className="text-xs text-muted-foreground hidden sm:block">
-            v3.0.0 AI
+            v4.0.0 Revolutionary AI
           </div>
           {userId && (
             <>
               <Button
                 size="icon"
                 variant="ghost"
+                onClick={() => setRightPanel(rightPanel === 'execution' ? null : 'execution')}
+                className="h-8 w-8"
+                title="Live Execution"
+              >
+                <Play className="h-5 w-5" weight={rightPanel === 'execution' ? 'fill' : 'regular'} />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setRightPanel(rightPanel === 'debug' ? null : 'debug')}
+                className="h-8 w-8"
+                title="Visual Debugger"
+              >
+                <Bug className="h-5 w-5" weight={rightPanel === 'debug' ? 'fill' : 'regular'} />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setRightPanel(rightPanel === 'predictions' ? null : 'predictions')}
+                className="h-8 w-8"
+                title="AI Predictions"
+              >
+                <Brain className="h-5 w-5" weight={rightPanel === 'predictions' ? 'fill' : 'regular'} />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setRightPanel(rightPanel === 'complexity' ? null : 'complexity')}
+                className="h-8 w-8"
+                title="Complexity Analysis"
+              >
+                <ChartBar className="h-5 w-5" weight={rightPanel === 'complexity' ? 'fill' : 'regular'} />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setRightPanel(rightPanel === 'pair' ? null : 'pair')}
+                className="h-8 w-8"
+                title="AI Pair Programmer"
+              >
+                <Robot className="h-5 w-5" weight={rightPanel === 'pair' ? 'fill' : 'regular'} />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setRightPanel(rightPanel === 'performance' ? null : 'performance')}
+                className="h-8 w-8"
+                title="Performance Profiler"
+              >
+                <Speedometer className="h-5 w-5" weight={rightPanel === 'performance' ? 'fill' : 'regular'} />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
                 onClick={() => setAiChatVisible(!aiChatVisible)}
                 className="h-8 w-8"
-                title="AI Assistant (Cmd/Ctrl+K)"
+                title="AI Chat (Cmd/Ctrl+K)"
               >
                 <Sparkle className="h-5 w-5" weight={aiChatVisible ? 'fill' : 'regular'} />
               </Button>
@@ -287,6 +352,79 @@ function App() {
                 />
               )}
             </div>
+
+            {rightPanel === 'execution' && activeTab && (
+              <div className="w-96 shrink-0">
+                <LiveExecutionPanel
+                  code={activeTab.content}
+                  language={activeTab.language}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'debug' && activeTab && (
+              <div className="w-96 shrink-0">
+                <VisualDebugPanel
+                  code={activeTab.content}
+                  currentLine={activeTab.cursorPosition.line}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'predictions' && activeTab && (
+              <div className="w-96 shrink-0">
+                <AIPredictionPanel
+                  code={activeTab.content}
+                  language={activeTab.language}
+                  cursorLine={activeTab.cursorPosition.line}
+                  onApplyPrediction={(code) => {
+                    const lines = activeTab.content.split('\n')
+                    lines.splice(activeTab.cursorPosition.line, 0, code)
+                    handleContentChange(lines.join('\n'))
+                  }}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'complexity' && activeTab && (
+              <div className="w-96 shrink-0">
+                <CodeComplexityVisualizer
+                  code={activeTab.content}
+                  language={activeTab.language}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'pair' && (
+              <div className="w-96 shrink-0">
+                <CollaborativeAIPairProgrammer
+                  files={safeFiles}
+                  activeFile={activeTab}
+                  onCodeGenerated={(code) => {
+                    if (activeTab) {
+                      const lines = activeTab.content.split('\n')
+                      lines.push(code)
+                      handleContentChange(lines.join('\n'))
+                    }
+                  }}
+                  onFileCreated={(name, content) => {
+                    handleFileCreate(name)
+                  }}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'performance' && activeTab && (
+              <div className="w-96 shrink-0">
+                <PerformanceProfiler
+                  code={activeTab.content}
+                  isRunning={false}
+                  onOptimize={(line) => {
+                    toast.info(`Analyzing line ${line} for optimization...`)
+                  }}
+                />
+              </div>
+            )}
 
             {aiChatVisible && (
               <div className="w-96 shrink-0">
