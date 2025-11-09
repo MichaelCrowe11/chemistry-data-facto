@@ -25,7 +25,7 @@
   --popover: oklch(0.24 0.01 240);
   --popover-foreground: oklch(0.85 0.01 240);
   --primary: oklch(0.55 0.15 240);
-  --primary-foreground: oklch(1 0 0);
+  --primary-foreground: oklch(96.8% 0.007 247.896);
   --secondary: oklch(0.35 0.01 240);
   --secondary-foreground: oklch(0.85 0.01 240);
   --muted: oklch(0.30 0.01 240);
@@ -37,7 +37,7 @@
   --border: oklch(0.30 0.01 240);
   --input: oklch(0.25 0.01 240);
   --ring: oklch(0.55 0.15 240);
-  --radius: 0rem;
+  --radius: 1rem;
   
   --editor-bg: oklch(0.20 0.01 240);
   --editor-line-number: oklch(0.45 0.01 240);
@@ -46,6 +46,7 @@
   --status-bar-bg: oklch(0.16 0.01 240);
   --tab-active-bg: oklch(0.20 0.01 240);
   --tab-inactive-bg: oklch(0.18 0.01 240);
+  --spacing: 0.20rem;
 }
 
 @theme {
