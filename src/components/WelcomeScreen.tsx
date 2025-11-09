@@ -1,11 +1,12 @@
-import { Code, File, Folder } from '@phosphor-icons/react'
+import { Code, File, Folder, User } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 
 interface WelcomeScreenProps {
   onCreateFile: () => void
+  userName?: string
 }
 
-export function WelcomeScreen({ onCreateFile }: WelcomeScreenProps) {
+export function WelcomeScreen({ onCreateFile, userName }: WelcomeScreenProps) {
   return (
     <div className="h-full flex flex-col items-center justify-center bg-background text-foreground">
       <div className="max-w-md text-center space-y-6">
@@ -20,6 +21,12 @@ export function WelcomeScreen({ onCreateFile }: WelcomeScreenProps) {
           <p className="text-muted-foreground text-sm">
             A modern code editor for the web
           </p>
+          {userName && (
+            <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-2">
+              <User className="w-3.5 h-3.5" />
+              <span>Welcome back, {userName}</span>
+            </div>
+          )}
         </div>
 
         <div className="pt-4 space-y-3">
@@ -35,7 +42,7 @@ export function WelcomeScreen({ onCreateFile }: WelcomeScreenProps) {
           <div className="text-xs text-muted-foreground space-y-1">
             <p className="flex items-center justify-center gap-2">
               <Folder className="w-3 h-3" />
-              Files are saved automatically
+              Files are saved automatically to your workspace
             </p>
           </div>
         </div>

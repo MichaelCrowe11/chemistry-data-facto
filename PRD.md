@@ -12,6 +12,13 @@ A code editing interface with file management, syntax highlighting, and customiz
 
 ## Essential Features
 
+### User Authentication & Profiles
+- **Functionality**: GitHub-based user authentication with avatar, username, and owner status
+- **Purpose**: Personalize the experience and enable user-specific workspaces
+- **Trigger**: User opens application
+- **Progression**: Load app → Authenticate via GitHub → Show user profile → Access personal workspace
+- **Success criteria**: User profile loads within 1s, avatar displays correctly, owner badge shows for workspace owners
+
 ### Code Editor Panel
 - **Functionality**: Full-featured text editor with syntax highlighting, line numbers, and tab support
 - **Purpose**: Enable developers to write and edit code comfortably in the browser
@@ -40,12 +47,29 @@ A code editing interface with file management, syntax highlighting, and customiz
 - **Progression**: Edit content → Status updates → Shows line/column → Language detected
 - **Success criteria**: Updates in real-time, information accurate, no lag
 
+### Settings Dialog
+- **Functionality**: Customize editor preferences (font size, tab size, line numbers, word wrap, auto-save)
+- **Purpose**: Allow users to personalize their coding environment
+- **Trigger**: User clicks settings icon in toolbar
+- **Progression**: Click settings → Dialog opens → Adjust preferences → Changes save automatically
+- **Success criteria**: Settings persist between sessions, apply immediately, organized clearly
+
+### Workspace Sharing
+- **Functionality**: Share workspace URL with others (owner-only feature)
+- **Purpose**: Enable collaboration and sharing of code projects
+- **Trigger**: Owner clicks share icon in toolbar
+- **Progression**: Click share → Modal opens → Copy link → Share with others
+- **Success criteria**: Link copies successfully, shows workspace stats, clear owner indicators
+
 ## Edge Case Handling
 
+- **Unauthenticated Users** - Show loading state during auth, fallback UI if auth fails
+- **User Workspace Isolation** - Each user has separate file storage using user ID as key
+- **Owner Permissions** - Only workspace owners see sharing features
 - **Large Files** - Warn when opening files >1MB, use virtualization for rendering
 - **Unsaved Changes** - Show dot indicator on tab, confirm before closing
 - **Invalid File Names** - Validate on creation, show helpful error messages
-- **Empty States** - Show welcome screen when no files open, helpful getting started tips
+- **Empty States** - Show welcome screen when no files open, helpful getting started tips with user greeting
 - **Browser Storage Limits** - Warn when approaching quota, allow export to download
 
 ## Design Direction
@@ -91,26 +115,37 @@ Animations should be minimal and functional, reinforcing spatial relationships a
 ## Component Selection
 
 - **Components**: 
+  - Avatar (user profile picture)
+  - DropdownMenu (user menu, file context menus)
+  - Badge (owner status, file counts)
   - Button (toolbar actions with icon-only style)
   - Tabs (editor file tabs with close buttons)
   - ScrollArea (file explorer and editor content)
   - Separator (resizable panels)
   - Tooltip (icon button labels)
-  - DropdownMenu (file context menus)
-  - Dialog (confirm delete, settings)
-  - Input (file rename, search)
+  - Dialog (confirm delete, settings, sharing)
+  - Input (file rename, search, settings)
+  - Switch (settings toggles)
+  - Label (form labels)
 - **Customizations**: 
   - CodeEditor component (Monaco-style editor with line numbers)
   - FileTree component (collapsible tree with icons)
   - StatusBar component (bottom info bar)
   - TabBar component (horizontal tab strip with close)
   - Sidebar component (collapsible side panel)
+  - UserProfile component (avatar dropdown with user info)
+  - SettingsDialog component (editor preferences)
+  - ShareWorkspace component (collaboration features)
 - **States**: 
   - Buttons: Rest/Hover (background subtle highlight)/Active (background darker)/Disabled (opacity 0.4)
   - Tabs: Inactive/Active (border top accent color)/Hover (background lighter)/Dirty (dot indicator)
   - Tree Items: Rest/Hover (background subtle)/Selected (background accent)/Focused (border left)
   - Editor: Focused (cursor blink)/Selection (background highlight)
 - **Icon Selection**: 
+  - User/Avatar (user profile)
+  - Crown (owner badge)
+  - ShareNetwork (workspace sharing)
+  - Gear (settings)
   - Files (file document icon)
   - Folder/FolderOpen (directory icons)
   - Plus (new file)
@@ -118,5 +153,7 @@ Animations should be minimal and functional, reinforcing spatial relationships a
   - Code (code brackets)
   - Settings/Gear (preferences)
   - Search/MagnifyingGlass (find)
+  - Palette (appearance settings)
+  - Copy/Check (clipboard actions)
 - **Spacing**: Compact spacing for professional IDE feel - 4px, 8px, 12px, 16px, 24px using Tailwind scale. Sidebar padding 12px, editor padding 16px.
 - **Mobile**: Responsive layout with collapsible sidebar (hamburger menu), full-screen editor on mobile, touch-optimized tab switching, virtual keyboard-aware viewport

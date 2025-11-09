@@ -6,15 +6,21 @@ import { TabBar } from '@/components/TabBar'
 import { CodeEditor } from '@/components/CodeEditor'
 import { StatusBar } from '@/components/StatusBar'
 import { WelcomeScreen } from '@/components/WelcomeScreen'
+import { UserProfile } from '@/components/UserProfile'
+import { SettingsDialog } from '@/components/SettingsDialog'
+import { ShareWorkspace } from '@/components/ShareWorkspace'
 import { detectLanguage, generateId } from '@/lib/editor-utils'
 import { Sidebar, List } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 
 function App() {
-  const [files, setFiles] = useKV<FileItem[]>('crowe-code-files', [])
-  const [openTabs, setOpenTabs] = useKV<EditorTab[]>('crowe-code-tabs', [])
-  const [activeTabId, setActiveTabId] = useKV<string | null>('crowe-code-active-tab', null)
+  const [userId, setUserId] = useState<string>('')
+  const [userName, setUserName] = useState<string>('')
+  const [isOwner, setIsOwner] = useState(false)
+  const [files, setFiles] = useKV<FileItem[]>(`crowe-code-files-${userId}`, [])
+  const [openTabs, setOpenTabs] = useKV<EditorTab[]>(`crowe-code-tabs-${userId}`, [])
+  const [activeTabId, setActiveTabId] = useKV<string | null>(`crowe-code-active-tab-${userId}`, null)
   const [sidebarVisible, setSidebarVisible] = useState(true)
 
   const safeFiles = files || []
@@ -184,8 +190,23 @@ function App() {
           </Button>
           <h1 className="text-sm font-semibold">Crowe Code</h1>
         </div>
-        <div className="text-xs text-muted-foreground">
-          v2.0.36
+        <div className="flex items-center gap-2">
+          <div className="text-xs text-muted-foreground hidden sm:block">
+            v2.0.36
+          </div>
+          {userId && (
+            <>
+              <ShareWorkspace isOwner={isOwner} fileCount={safeFiles.length} />
+              <SettingsDialog userId={userId} />
+            </>
+          )}
+          <UserProfile
+            onUserLoaded={(user) => {
+              setUserId(user.id)
+              setUserName(user.login)
+              setIsOwner(user.isOwner)
+            }}
+          />
         </div>
       </div>
 
@@ -225,6 +246,7 @@ function App() {
                   const fileName = prompt('Enter file name:')
                   if (fileName) handleFileCreate(fileName)
                 }}
+                userName={userName}
               />
             )}
           </div>
