@@ -22,8 +22,10 @@ import { QuantumSynthesisPanel } from '@/components/QuantumSynthesisPanel'
 import { CodeDNASequencer } from '@/components/CodeDNASequencer'
 import { HolographicCodeViz } from '@/components/HolographicCodeViz'
 import { SentientDebugger } from '@/components/SentientDebugger'
+import { ResearchPaperPanel } from '@/components/ResearchPaperPanel'
+import { ExperimentTrackingPanel } from '@/components/ExperimentTrackingPanel'
 import { detectLanguage, generateId } from '@/lib/editor-utils'
-import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube } from '@phosphor-icons/react'
+import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
@@ -38,7 +40,7 @@ function App() {
   const [sidebarVisible, setSidebarVisible] = useState(true)
   const [aiChatVisible, setAiChatVisible] = useState(false)
   const [selectedCode, setSelectedCode] = useState('')
-  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | null>('execution')
+  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | null>('papers')
 
   const safeFiles = files || []
   const safeOpenTabs = openTabs || []
@@ -214,14 +216,32 @@ function App() {
             {sidebarVisible ? <Sidebar className="h-5 w-5" /> : <List className="h-5 w-5" />}
           </Button>
           <h1 className="text-sm font-semibold text-slate-50 border-cyan-300">Crowe Code</h1>
-          <Badge variant="default" className="text-xs bg-gradient-to-r from-purple-500 to-pink-500 border-0">Quantum AI</Badge>
+          <Badge variant="default" className="text-xs bg-gradient-to-r from-blue-500 to-cyan-500 border-0">Research Edition</Badge>
         </div>
         <div className="flex items-center gap-2">
           <div className="text-xs text-muted-foreground hidden sm:block">
-            v5.0.0 Quantum Evolution
+            v6.0.0 Research Edition
           </div>
           {userId && (
             <>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setRightPanel(rightPanel === 'papers' ? null : 'papers')}
+                className="h-8 w-8 bg-gradient-to-r from-blue-500/20 to-cyan-500/20"
+                title="Research Papers (arXiv)"
+              >
+                <Article className="h-5 w-5 text-blue-400" weight={rightPanel === 'papers' ? 'fill' : 'regular'} />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setRightPanel(rightPanel === 'experiments' ? null : 'experiments')}
+                className="h-8 w-8 bg-gradient-to-r from-green-500/20 to-emerald-500/20"
+                title="Experiment Tracking"
+              >
+                <Flask className="h-5 w-5 text-green-400" weight={rightPanel === 'experiments' ? 'fill' : 'regular'} />
+              </Button>
               <Button
                 size="icon"
                 variant="ghost"
@@ -513,6 +533,27 @@ function App() {
                       </div>,
                       { duration: 8000 }
                     )
+                  }}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'papers' && (
+              <div className="w-96 shrink-0">
+                <ResearchPaperPanel
+                  onLinkPaper={(paper) => {
+                    toast.success(`Linked paper: ${paper.title}`)
+                  }}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'experiments' && (
+              <div className="w-96 shrink-0">
+                <ExperimentTrackingPanel
+                  currentCode={activeTab?.content || ''}
+                  onRunExperiment={(expId) => {
+                    toast.info(`Running experiment: ${expId}`)
                   }}
                 />
               </div>

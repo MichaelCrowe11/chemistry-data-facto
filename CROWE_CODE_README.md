@@ -4,6 +4,79 @@
 
 Crowe Code transcends traditional IDEs by combining cutting-edge AI with revolutionary features that have never been seen before. Write code by describing intent, visualize architecture in 3D space, analyze patterns at a genetic level, and debug with AI that understands what you *meant* to do.
 
+# 🚀 Crowe Code - Research IDE
+
+> **The first IDE built specifically for researchers, scientists, and academic developers**
+
+Crowe Code bridges the gap between academic papers and production code. Search arXiv directly from your editor, track ML experiments with zero configuration, generate proper citations, and build reproducible research environments - all in one integrated platform.
+
+## 🎓 Research-First Features
+
+### 📚 Research Paper Integration
+Search academic databases (arXiv, PubMed) directly from the IDE. Extract algorithms from papers, generate implementations, and maintain proper citations.
+
+- **Paper Search**: Find relevant research instantly
+- **Citation Generation**: Auto-generate BibTeX citations
+- **Code Linking**: Link implementations to source papers
+- **PDF Access**: Direct access to full papers
+
+### 🧪 Experiment Tracking
+Track ML experiments with automatic parameter and metric logging. Compare runs, export results, and maintain full experiment history.
+
+- **Zero-Config Tracking**: Automatic experiment detection
+- **Metric Comparison**: Compare accuracy, loss, F1 across runs
+- **Result Export**: CSV/JSON export for analysis
+- **Code Snapshots**: Preserve exact code for each run
+- **Visual Comparisons**: Charts and tables for metrics
+
+### 🔬 Reproducibility Engine
+Package entire computational environments for perfect reproduction. Share research with confidence that others can replicate your results.
+
+- **Dependency Capture**: Auto-detect all dependencies
+- **Environment Packaging**: Complete environment snapshots  
+- **Random Seed Tracking**: Ensure deterministic results
+- **One-Click Restore**: Recreate environments anywhere
+
+### 📖 Literature-Linked Analysis
+AI identifies algorithms in your code and links them to the academic papers that introduced them.
+
+- **Algorithm Detection**: Recognize common algorithms
+- **Paper Matching**: Find original research papers
+- **Citation Integration**: Add proper academic attribution
+- **Theoretical Context**: Connect code to theory
+
+### 📊 Data Pipeline Visualizer
+Visualize how data flows through your research code with interactive diagrams.
+
+- **Flow Graphs**: See data transformations visually
+- **Bottleneck Detection**: Find performance issues
+- **Shape Tracking**: Monitor tensor/array dimensions
+- **Export Diagrams**: Publication-ready visualizations
+
+### 🏆 Benchmark Comparator
+Compare algorithm performance against baselines with statistical significance testing.
+
+- **Statistical Tests**: T-tests, confidence intervals
+- **Multiple Metrics**: Accuracy, speed, memory
+- **Publication Plots**: LaTeX-ready figures
+- **Baseline Tracking**: Compare against state-of-the-art
+
+### ✍️ Collaborative Annotations
+Add research notes, hypotheses, and findings directly in code with team collaboration.
+
+- **Rich Markdown**: Full markdown support
+- **Threading**: Discuss findings inline
+- **@Mentions**: Tag team members
+- **Export to Papers**: Include in publications
+
+### 📄 Publication-Ready Export
+Export code snippets with formatting for academic papers (LaTeX, Word).
+
+- **LaTeX Listings**: Proper syntax highlighting
+- **Line Numbers**: Configurable numbering
+- **Multiple Templates**: ACM, IEEE, Springer formats
+- **Copy & Paste**: Ready for your paper
+
 ## ✨ Revolutionary Features
 
 ### 🧬 Code DNA Sequencer
@@ -121,24 +194,56 @@ Context-aware coding assistant that knows your files and project.
 - **Icons**: Phosphor Icons
 - **Storage**: Spark KV (persistent)
 
-## 🔥 What Makes It Revolutionary
+## 🎯 What Makes Crowe Code Valuable for Research
 
-### 1. **Quantum Synthesis**
-First IDE to generate complete architectures from natural language. Not autocomplete - full system design and implementation.
+### 1. **Paper-to-Code Integration**
+First IDE to bring academic papers directly into your workflow. Search arXiv without leaving your editor, extract algorithms from PDFs, and maintain proper citations automatically.
 
-### 2. **Code DNA Analysis**
-Analyzes code patterns like genetic sequences. Understands code "health" at a molecular level.
+### 2. **Zero-Config Experiment Tracking**
+No complex ML tracking setup required. Experiments are automatically logged with parameters, metrics, and code snapshots. Compare runs and export results instantly.
 
-### 3. **Holographic 3D**
-First web IDE with real-time 3D code structure visualization. See your architecture in space.
+### 3. **True Reproducibility**
+Package entire environments with dependencies, data sources, and random seeds. Share research that others can actually reproduce with one click.
 
-### 4. **Sentient Debugging**
-Goes beyond syntax - understands *intent*. Catches logic errors that traditional debuggers miss.
+### 4. **Literature-Linked Development**
+AI connects your implementations to the papers that introduced them. Understand the theoretical foundations while you code.
 
-### 5. **True AI Collaboration**
-Not just assistance - the AI actively writes code with you as a true pair programmer.
+### 5. **Academic Citation Management**
+Auto-generate BibTeX, track all papers and datasets used, and export proper citations for your publications.
 
-## 📚 Documentation
+## 🔥 Real Research Value
+
+### For PhD Students & Researchers
+- **Literature Review**: Search and organize papers while coding
+- **Experiment Management**: Track all runs without complex setup
+- **Reproducibility**: Share research others can actually run
+- **Citation Tracking**: Never lose track of sources
+- **Collaboration**: Annotate findings with your team
+
+### For ML Engineers
+- **Experiment Comparison**: Compare models and hyperparameters
+- **Baseline Tracking**: Benchmark against published results
+- **Pipeline Visualization**: Understand data flow visually
+- **Performance Profiling**: Find bottlenecks quickly
+- **Documentation**: Link code to research papers
+
+### For Data Scientists
+- **Paper Discovery**: Find relevant methods quickly
+- **Implementation Help**: Extract algorithms from papers
+- **Result Export**: Generate publication-ready figures
+- **Team Collaboration**: Share findings with annotations
+- **Knowledge Management**: Connect code to sources
+
+## 🚀 Getting Started
+
+1. **Open Crowe Code** - Authenticate with GitHub
+2. **Search Papers** - Click 📚 icon to search arXiv
+3. **Start Experiment** - Click 🧪 to track your ML runs
+4. **Link Research** - Copy citations directly to your code
+5. **Export Results** - Generate CSV or publication figures
+6. **Collaborate** - Add annotations and share with team
+
+## 🎨 Technology Stack
 
 ### Keyboard Shortcuts
 - `Cmd/Ctrl + S` - Save current file
@@ -149,6 +254,8 @@ Not just assistance - the AI actively writes code with you as a true pair progra
 - `Cmd/Ctrl + Shift + Enter` - Run code
 
 ### Panel Shortcuts
+- **📚 Papers** - Search and link academic papers (NEW)
+- **🧪 Experiments** - Track ML runs and metrics (NEW)
 - **⚛️ Quantum** - Generate code from intent
 - **🧬 DNA** - Analyze code patterns
 - **🔮 Holographic** - 3D visualization
@@ -162,7 +269,18 @@ Not just assistance - the AI actively writes code with you as a true pair progra
 
 ## 🌟 Version History
 
-### v5.0.0 - Quantum Evolution (Current)
+### v6.0.0 - Research Edition (Current)
+- 📚 Research Paper Integration with arXiv search
+- 🧪 Experiment Tracking & Comparison
+- 🔬 Reproducibility Engine
+- 📖 Literature-Linked Code Analysis  
+- 📊 Data Pipeline Visualizer
+- 🏆 Benchmark Comparator
+- ✍️ Collaborative Annotations
+- 📄 Publication-Ready Export
+- Academic citation generation
+
+### v5.0.0 - Quantum Evolution
 - ⚛️ Quantum Code Synthesis
 - 🧬 Code DNA Sequencer
 - 🔮 Holographic 3D Visualization
@@ -183,43 +301,57 @@ Not just assistance - the AI actively writes code with you as a true pair progra
 
 ## 🎓 Use Cases
 
-### Learning
-- **Understand Complex Code**: Holographic 3D shows structure instantly
-- **Intent Analysis**: Sentient debugger explains what code actually does
-- **Pattern Recognition**: DNA sequencer identifies common patterns
+### Academic Research
+- **Literature Review**: Search papers while coding implementations
+- **Experiment Tracking**: Log all ML experiments automatically
+- **Reproducibility**: Package environments for paper submissions  
+- **Citation Management**: Generate BibTeX for all sources
+- **Collaboration**: Annotate code with research notes
 
-### Professional Development
-- **Rapid Prototyping**: Quantum synthesis generates full features
-- **Code Reviews**: DNA analysis provides health metrics
-- **Performance Optimization**: Line-level profiling finds bottlenecks
+### Machine Learning Development
+- **Baseline Comparison**: Compare against published benchmarks
+- **Hyperparameter Tracking**: Log all experiment configurations
+- **Result Visualization**: Generate publication-ready plots
+- **Pipeline Understanding**: Visualize data flow
+- **Paper Implementation**: Extract algorithms from papers
 
-### Pair Programming
-- **Solo, Never Alone**: AI pair programmer actively collaborates
-- **Intent Validation**: Sentient debugger ensures logic matches goals
-- **Architectural Guidance**: Quantum synthesis suggests structure
+### Data Science Teams
+- **Experiment Sharing**: Share reproducible research packages
+- **Knowledge Management**: Link code to source papers
+- **Team Annotations**: Collaborative research notes
+- **Result Export**: CSV/JSON for further analysis
+- **Documentation**: Maintain academic rigor
+
+### Learning & Education
+- **Understanding Algorithms**: See original paper for each algorithm
+- **Implementation Practice**: Extract pseudocode from papers
+- **Code Context**: Understand theoretical foundations
+- **Best Practices**: Learn from published research
 
 ## 🔮 Future Vision
 
-We're pushing the boundaries of what's possible in code editors:
+We're building the future of research development:
 
-- **Neural Code Evolution**: Self-improving code that learns from execution
-- **Temporal Debugging**: Rewind time to any previous state
-- **Multi-Agent Collaboration**: Multiple AI specialists working together
-- **Predictive Compilation**: AI predicts and prevents errors before typing
-- **Cognitive Load Optimization**: AI reduces mental overhead automatically
+- **Automated Literature Review**: AI finds all relevant papers for your code
+- **Cross-Paper Analysis**: Connect implementations across multiple papers
+- **Collaborative Peer Review**: In-editor code review with academic rigor
+- **Dataset Integration**: Direct links to research datasets
+- **Reproducibility Verification**: Automatic validation of research claims
+- **Conference Templates**: One-click export to conference formats
 
 ## 💡 Philosophy
 
-Crowe Code is built on the belief that **code editors should understand *why* you're coding, not just *what* you're typing**. By combining quantum synthesis, genetic analysis, holographic visualization, and sentient debugging, we create an environment where your intentions become reality faster than ever before.
+Crowe Code is built on the belief that **research and code should be inseparable**. By integrating academic papers, experiment tracking, reproducibility, and collaboration directly into the IDE, we eliminate the friction between reading research and implementing it. The result is faster discovery, better science, and more reproducible results.
 
 ## 🤝 Contributing
 
-This is a revolutionary platform. We welcome contributions that push boundaries:
+We welcome contributions that advance research development:
 
-- New AI analysis techniques
-- Enhanced visualizations
-- Performance improvements
-- Novel debugging approaches
+- Research workflow improvements
+- New paper database integrations
+- Enhanced experiment tracking
+- Reproducibility features
+- Citation format support
 
 ## 📄 License
 
@@ -227,15 +359,20 @@ MIT License - See LICENSE file for details
 
 ## 🙏 Acknowledgments
 
-Built on the shoulders of giants:
-- React team for the framework
-- Anthropic for Claude AI concepts
-- OpenAI for GPT-4
-- Three.js community for 3D graphics
-- shadcn for beautiful components
+Built for the research community:
+- Academic researchers pushing boundaries
+- ML engineers bridging theory and practice
+- Data scientists seeking reproducibility
+- Open science advocates
+
+Special thanks to:
+- arXiv for open access to research
+- Research community for inspiration
+- React, TypeScript, Three.js teams
+- OpenAI for GPT-4 capabilities
 
 ---
 
-**Crowe Code** - Where intentions become code, and code becomes art.
+**Crowe Code** - Where research meets production, and papers become code.
 
-*Version 5.0.0 - Quantum Evolution* 🚀
+*Version 6.0.0 - Research Edition* 🎓
