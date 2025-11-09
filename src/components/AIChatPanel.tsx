@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { X, PaperPlaneTilt, Code, Sparkle, Copy, Check, Brain } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
+import { croweAI, type CroweAIMessage } from '@/lib/crowe-ai'
 
 interface Message {
   id: string
@@ -159,7 +160,12 @@ ${contextPrompt}`
         <div className="space-y-4">
           {(messages || []).length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
-              <Sparkle className="h-12 w-12 mx-auto mb-3 opacity-50" weight="duotone" />
+              <Avatar className="h-16 w-16 mx-auto mb-3">
+                <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-600">
+                  <Brain className="h-8 w-8 text-white" weight="fill" />
+                </AvatarFallback>
+              </Avatar>
+              <p className="text-sm font-semibold mb-1">Crowe Logic AI</p>
               <p className="text-sm">Ask me anything about your code!</p>
               <p className="text-xs mt-2">I can help with debugging, refactoring, explaining code, and more.</p>
             </div>
@@ -173,6 +179,13 @@ ${contextPrompt}`
                 message.role === 'user' ? 'justify-end' : 'justify-start'
               )}
             >
+              {message.role === 'assistant' && (
+                <Avatar className="h-8 w-8 shrink-0 mt-1">
+                  <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-600">
+                    <Brain className="h-4 w-4 text-white" weight="fill" />
+                  </AvatarFallback>
+                </Avatar>
+              )}
               <div
                 className={cn(
                   'max-w-[85%] rounded-lg px-4 py-2.5 text-sm',
@@ -235,6 +248,11 @@ ${contextPrompt}`
 
           {isLoading && (
             <div className="flex gap-3 justify-start">
+              <Avatar className="h-8 w-8 shrink-0 mt-1">
+                <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-600">
+                  <Brain className="h-4 w-4 text-white" weight="fill" />
+                </AvatarFallback>
+              </Avatar>
               <div className="bg-card border border-border rounded-lg px-4 py-2.5">
                 <div className="flex gap-1">
                   <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
