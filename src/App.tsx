@@ -36,6 +36,7 @@ import { MolecularBackground } from '@/components/MolecularBackground'
 import { Enhanced3DWelcome } from '@/components/Enhanced3DWelcome'
 import { PageTransition3D } from '@/components/PageTransition3D'
 import { Performance3DSettings, Performance3DConfig, usePerformance3DConfig } from '@/components/Performance3DSettings'
+import { initializePerformanceConfig } from '@/lib/device-detection'
 
 function App() {
   const [userId, setUserId] = useState<string>('')
@@ -50,6 +51,12 @@ function App() {
   const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | 'reproducibility' | null>('papers')
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [performanceConfig, setPerformanceConfig] = useState<Performance3DConfig | null>(null)
+
+  // Auto-detect device capabilities and set performance config on mount
+  useEffect(() => {
+    const config = initializePerformanceConfig()
+    setPerformanceConfig(config)
+  }, [])
   const [lastRunSummary, setLastRunSummary] = useState<{ durationMs: number; logs: any[]; timeline?: any[] } | null>(null)
 
   // Memoize fallbacks to keep stable references for hook dependencies
