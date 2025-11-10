@@ -254,8 +254,6 @@ Auto-generate BibTeX, track all papers and datasets used, and export proper cita
 - `Cmd/Ctrl + Shift + Enter` - Run code
 
 ### Panel Shortcuts
-- **📚 Papers** - Search and link academic papers (NEW)
-- **🧪 Experiments** - Track ML runs and metrics (NEW)
 - **⚛️ Quantum** - Generate code from intent
 - **🧬 DNA** - Analyze code patterns
 - **🔮 Holographic** - 3D visualization
@@ -269,14 +267,16 @@ Auto-generate BibTeX, track all papers and datasets used, and export proper cita
 
 ## 🌟 Version History
 
-### v6.0.0 - Research Edition (Current)
-- 📚 Research Paper Integration with arXiv search
-- 🧪 Experiment Tracking & Comparison
-- 🔬 Reproducibility Engine
-- 📖 Literature-Linked Code Analysis  
-- 📊 Data Pipeline Visualizer
-- 🏆 Benchmark Comparator
-- ✍️ Collaborative Annotations
+### v5.0.0 - Quantum Evolution (Current)
+- ⚛️ Quantum Code Synthesis
+- 🧬 Code DNA Sequencer
+- 🔮 Holographic 3D Visualization
+- 🧠 Sentient Debugger
+- Revolutionary AI features across the board
+
+### v4.0.0 - Revolutionary AI
+- Live execution engine
+- Visual debugging
 - 📄 Publication-Ready Export
 - Academic citation generation
 
