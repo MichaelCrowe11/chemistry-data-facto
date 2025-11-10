@@ -5,6 +5,9 @@
   - Outgoing message: { id: string, logs: Array<{ type: string; content: string; timestamp: number }>, result?: any, error?: string, durationMs: number, timeline?: any[] }
 */
 
+// Ensure performance.now is available in worker context
+const perf = self.performance || ({ now: () => Date.now() } as Performance);
+
 type InMsg = {
   id: string
   code: string
@@ -60,10 +63,10 @@ self.onmessage = async (evt: MessageEvent<InMsg>) => {
   // Expose tracing hook for instrumented code
   // @ts-ignore
   ;(self as any).__trace = (label: string, data?: any) => {
-    timeline.push({ t: performance.now(), label, data })
+    timeline.push({ t: perf.now(), label, data })
   }
 
-  const start = performance.now()
+  const start = perf.now()
   try {
     const executedSource = instrument ? instrumentSource(code) : code
     // Wrap in async IIFE to support top-level await-like behavior
@@ -80,7 +83,7 @@ self.onmessage = async (evt: MessageEvent<InMsg>) => {
     const AsyncFunction = async function () {}.constructor as any
     const fn = new AsyncFunction('sandboxConsole', wrapped)
     const result = await fn(sandboxConsole)
-    const duration = performance.now() - start
+    const duration = perf.now() - start
     const out: OutMsg = { id, logs, durationMs: duration }
     if (typeof result !== 'undefined') {
       out.result = result
@@ -89,7 +92,7 @@ self.onmessage = async (evt: MessageEvent<InMsg>) => {
     // @ts-ignore
     ;(self as any).postMessage(out)
   } catch (e: any) {
-    const duration = performance.now() - start
+    const duration = perf.now() - start
     const out: OutMsg = { id, logs, durationMs: duration, error: e?.message || String(e) }
     // @ts-ignore
     ;(self as any).postMessage(out)
