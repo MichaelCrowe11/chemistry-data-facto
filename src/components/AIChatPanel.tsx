@@ -18,6 +18,7 @@ interface Message {
 
 interface AIChatPanelProps {
   onClose: () => void
+  userId?: string
   currentFile?: {
     name: string
     content: string
@@ -26,8 +27,9 @@ interface AIChatPanelProps {
   onApplyCode?: (code: string) => void
 }
 
-export function AIChatPanel({ onClose, currentFile, onApplyCode }: AIChatPanelProps) {
-  const [messages, setMessages] = useKV<Message[]>('ai-chat-history', [])
+export function AIChatPanel({ onClose, userId, currentFile, onApplyCode }: AIChatPanelProps) {
+  const chatKey = `crowe-code-ai-chat-${userId || 'anon'}`
+  const [messages, setMessages] = useKV<Message[]>(chatKey, [])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
