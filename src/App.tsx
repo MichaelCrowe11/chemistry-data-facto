@@ -24,8 +24,9 @@ import { HolographicCodeViz } from '@/components/HolographicCodeViz'
 import { SentientDebugger } from '@/components/SentientDebugger'
 import { ResearchPaperPanel } from '@/components/ResearchPaperPanel'
 import { ExperimentTrackingPanel } from '@/components/ExperimentTrackingPanel'
+import { ReproducibilityEngine } from '@/components/ReproducibilityEngine'
 import { detectLanguage, generateId } from '@/lib/editor-utils'
-import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask } from '@phosphor-icons/react'
+import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask, Package } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
@@ -40,7 +41,7 @@ function App() {
   const [sidebarVisible, setSidebarVisible] = useState(true)
   const [aiChatVisible, setAiChatVisible] = useState(false)
   const [selectedCode, setSelectedCode] = useState('')
-  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | null>('papers')
+  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | 'reproducibility' | null>('papers')
 
   const safeFiles = files || []
   const safeOpenTabs = openTabs || []
@@ -241,6 +242,15 @@ function App() {
                 title="Experiment Tracking"
               >
                 <Flask className="h-5 w-5 text-green-400" weight={rightPanel === 'experiments' ? 'fill' : 'regular'} />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setRightPanel(rightPanel === 'reproducibility' ? null : 'reproducibility')}
+                className="h-8 w-8 bg-gradient-to-r from-orange-500/20 to-amber-500/20"
+                title="Reproducibility Engine"
+              >
+                <Package className="h-5 w-5 text-orange-400" weight={rightPanel === 'reproducibility' ? 'fill' : 'regular'} />
               </Button>
               <Button
                 size="icon"
@@ -554,6 +564,35 @@ function App() {
                   currentCode={activeTab?.content || ''}
                   onRunExperiment={(expId) => {
                     toast.info(`Running experiment: ${expId}`)
+                  }}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'reproducibility' && (
+              <div className="w-96 shrink-0">
+                <ReproducibilityEngine
+                  files={safeFiles}
+                  onRestoreEnvironment={async (pkg) => {
+                    setFiles(pkg.files)
+                    setOpenTabs([])
+                    setActiveTabId(null)
+                    
+                    if (pkg.dataSnapshot.kvStore) {
+                      for (const [key, value] of Object.entries(pkg.dataSnapshot.kvStore)) {
+                        await window.spark.kv.set(key, value)
+                      }
+                    }
+                    
+                    toast.success(
+                      <div>
+                        <div className="font-semibold">Environment Restored!</div>
+                        <div className="text-xs mt-1">
+                          {pkg.files.length} files, {Object.keys(pkg.dependencies).length} dependencies
+                        </div>
+                      </div>,
+                      { duration: 5000 }
+                    )
                   }}
                 />
               </div>
