@@ -66,6 +66,30 @@ function App() {
 
   const activeTab = safeOpenTabs.find(tab => tab.id === safeActiveTabId) || null
 
+  const handleFileSelect = useCallback((fileId: string) => {
+    const file = safeFiles.find(f => f.id === fileId)
+    if (!file || file.type !== 'file') return
+
+    const existingTab = safeOpenTabs.find(tab => tab.fileId === fileId)
+
+    if (existingTab) {
+      setActiveTabId(existingTab.id)
+    } else {
+      const newTab: EditorTab = {
+        id: generateId(),
+        fileId: file.id,
+        fileName: file.name,
+        content: file.content || '',
+        isDirty: false,
+        language: detectLanguage(file.name),
+        cursorPosition: { line: 1, column: 1 },
+      }
+
+      setOpenTabs((currentTabs) => [...(currentTabs || []), newTab])
+      setActiveTabId(newTab.id)
+    }
+  }, [safeFiles, safeOpenTabs, setOpenTabs, setActiveTabId])
+
   const handleFileCreate = useCallback((name: string, parentId?: string) => {
     const newFile: FileItem = {
       id: generateId(),
@@ -93,30 +117,6 @@ function App() {
     })
     toast.success('File deleted')
   }, [setFiles, setOpenTabs, setActiveTabId, safeActiveTabId])
-
-  const handleFileSelect = useCallback((fileId: string) => {
-    const file = safeFiles.find(f => f.id === fileId)
-    if (!file || file.type !== 'file') return
-
-    const existingTab = safeOpenTabs.find(tab => tab.fileId === fileId)
-    
-    if (existingTab) {
-      setActiveTabId(existingTab.id)
-    } else {
-      const newTab: EditorTab = {
-        id: generateId(),
-        fileId: file.id,
-        fileName: file.name,
-        content: file.content || '',
-        isDirty: false,
-        language: detectLanguage(file.name),
-        cursorPosition: { line: 1, column: 1 },
-      }
-      
-      setOpenTabs((currentTabs) => [...(currentTabs || []), newTab])
-      setActiveTabId(newTab.id)
-    }
-  }, [safeFiles, safeOpenTabs, setOpenTabs, setActiveTabId])
 
   const handleFolderToggle = useCallback((folderId: string) => {
     setFiles((currentFiles) => 
