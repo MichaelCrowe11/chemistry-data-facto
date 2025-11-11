@@ -31,7 +31,7 @@ import { ResearchPaperPanel } from '@/components/ResearchPaperPanel'
 import { ExperimentTrackingPanel } from '@/components/ExperimentTrackingPanel'
 import { ReproducibilityEngine } from '@/components/ReproducibilityEngine'
 import { detectLanguage, generateId } from '@/lib/editor-utils'
-import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask, Package, Gear } from '@phosphor-icons/react'
+import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask, Package, Gear, ImageSquare } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
@@ -41,6 +41,7 @@ import { MolecularBackground } from '@/components/MolecularBackground'
 import { Enhanced3DWelcome } from '@/components/Enhanced3DWelcome'
 import { Performance3DSettings, Performance3DConfig } from '@/components/Performance3DSettings'
 import { initializePerformanceConfig } from '@/lib/device-detection'
+import { Gallery3D } from '@/components/3DGallery'
 
 function App() {
   const [userId, setUserId] = useState<string>('')
@@ -52,7 +53,7 @@ function App() {
   const [sidebarVisible, setSidebarVisible] = useState(true)
   const [aiChatVisible, setAiChatVisible] = useState(false)
   const [selectedCode, setSelectedCode] = useState('')
-  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | 'reproducibility' | null>('papers')
+  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | 'reproducibility' | 'gallery3d' | null>('papers')
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [performanceConfig, setPerformanceConfig] = useState<Performance3DConfig | null>(null)
 
@@ -258,6 +259,16 @@ function App() {
           <Button
             size="icon"
             variant="ghost"
+            onClick={() => setRightPanel(rightPanel === 'gallery3d' ? null : 'gallery3d')}
+            className="h-8 w-8 bg-gradient-to-r from-cyan-500/20 to-purple-500/20"
+            title="3D Gallery (WebGL)"
+            aria-label="3D Gallery"
+          >
+            <ImageSquare className="h-5 w-5 text-cyan-400" weight={rightPanel === 'gallery3d' ? 'fill' : 'regular'} />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
             onClick={() => setSettingsOpen(true)}
             className="h-8 w-8"
             title="3D Graphics Settings"
@@ -266,7 +277,7 @@ function App() {
             <Gear className="h-5 w-5" />
           </Button>
           <div className="text-xs text-muted-foreground hidden sm:block">
-            v7.0.0 3D Edition
+            v8.0.0 3D Immersive Edition
           </div>
           {userId && (
             <>
@@ -657,6 +668,16 @@ function App() {
                       { duration: 5000 }
                     )
                   }}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'gallery3d' && (
+              <div className="w-96 shrink-0">
+                <Gallery3D
+                  onClose={() => setRightPanel(null)}
+                  currentCode={activeTab?.content}
+                  currentLanguage={activeTab?.language}
                 />
               </div>
             )}
