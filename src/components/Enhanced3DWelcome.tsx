@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { motion } from 'framer-motion';
 import { Code, File, User, Sparkle, Robot, Play, Bug, Brain, ChartBar, Speedometer } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -219,20 +218,14 @@ export function Enhanced3DWelcome({ onCreateFile, userName }: Enhanced3DWelcomeP
 
       {/* Content */}
       <div className="max-w-2xl text-center space-y-6 p-8 relative z-10">
-        <motion.div
-          className="flex justify-center"
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+        <div
+          className="flex justify-center animate-in zoom-in spin-in duration-500"
         >
           <AnimatedLogo className="text-5xl" />
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="space-y-2"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+        <div
+          className="space-y-2 animate-in fade-in slide-in-from-bottom-4 duration-300 delay-200"
         >
           <div className="flex items-center justify-center gap-3">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -251,39 +244,27 @@ export function Enhanced3DWelcome({ onCreateFile, userName }: Enhanced3DWelcomeP
               <span>Welcome back, {userName}</span>
             </div>
           )}
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="grid md:grid-cols-2 gap-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
+        <div
+          className="grid md:grid-cols-2 gap-4 animate-in fade-in duration-300 delay-400"
         >
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <motion.div
+              <div
                 key={index}
-                className="bg-card/80 backdrop-blur-sm border border-border rounded-lg p-4 space-y-3 text-left relative overflow-hidden group cursor-pointer"
+                className="bg-card/80 backdrop-blur-sm border border-border rounded-lg p-4 space-y-3 text-left relative overflow-hidden group cursor-pointer transition-all hover:scale-105 hover:shadow-lg animate-in fade-in slide-in-from-bottom-4 duration-300"
+                style={{
+                  animationDelay: `${500 + index * 100}ms`,
+                  transformStyle: 'preserve-3d',
+                  perspective: '1000px'
+                }}
                 onMouseEnter={() => setHoveredCard(index)}
                 onMouseLeave={() => setHoveredCard(null)}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + index * 0.1 }}
-                whileHover={{
-                  scale: 1.05,
-                  rotateY: 5,
-                  rotateX: 5,
-                  z: 50
-                }}
-                style={{
-                  transformStyle: 'preserve-3d',
-                  perspective: 1000
-                }}
               >
-                {/* Gradient overlay on hover */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                <div
+                  className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   style={{ zIndex: 0 }}
                 />
 
@@ -297,28 +278,21 @@ export function Enhanced3DWelcome({ onCreateFile, userName }: Enhanced3DWelcomeP
                   </p>
                 </div>
 
-                {/* 3D depth effect */}
                 {hoveredCard === index && (
-                  <motion.div
-                    className="absolute inset-0 border-2 border-cyan-500/50 rounded-lg"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+                  <div
+                    className="absolute inset-0 border-2 border-cyan-500/50 rounded-lg animate-in fade-in duration-200"
                     style={{ zIndex: 1 }}
                   />
                 )}
-              </motion.div>
+              </div>
             );
           })}
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="pt-4 space-y-3"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.0 }}
+        <div
+          className="pt-4 space-y-3 animate-in fade-in duration-300 delay-1000"
         >
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <div className="transition-transform hover:scale-105 active:scale-95">
             <Button
               onClick={onCreateFile}
               className="w-full gap-2 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 hover:from-cyan-600 hover:via-purple-600 hover:to-pink-600 border-0 shadow-lg shadow-purple-500/50"
@@ -327,7 +301,7 @@ export function Enhanced3DWelcome({ onCreateFile, userName }: Enhanced3DWelcomeP
               <File className="w-4 h-4" />
               Create Your First File
             </Button>
-          </motion.div>
+          </div>
 
           <div className="text-xs text-muted-foreground">
             <p className="flex items-center justify-center gap-2">
@@ -335,13 +309,10 @@ export function Enhanced3DWelcome({ onCreateFile, userName }: Enhanced3DWelcomeP
               All files auto-save to your workspace
             </p>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="pt-4 space-y-2 text-xs text-muted-foreground"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
+        <div
+          className="pt-4 space-y-2 text-xs text-muted-foreground animate-in fade-in duration-300 delay-1200"
         >
           <p className="font-medium">Essential Shortcuts</p>
           <div className="grid grid-cols-2 gap-2 text-left">
@@ -362,7 +333,7 @@ export function Enhanced3DWelcome({ onCreateFile, userName }: Enhanced3DWelcomeP
               <span className="ml-2">Toggle Sidebar</span>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
