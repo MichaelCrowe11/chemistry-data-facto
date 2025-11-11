@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { MapPin, X, Hand, Crosshair } from '@phosphor-icons/react'
 import { toast } from 'sonner'
-import '@/types/webxr'
+import '@/types/webxr.d.ts'
 
 interface ARCodeOverlayProps {
   code: string
