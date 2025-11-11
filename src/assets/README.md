@@ -1,139 +1,164 @@
 # Crowe Code Assets Directory
 
-This directory contains all static assets used throughout the Crowe Code platform.
+This directory contains all static assets used in the Crowe Code platform. Assets are organized by type for easy management and retrieval.
 
 ## Directory Structure
 
 ```
 assets/
-├── images/          # Image files (PNG, JPG, SVG, WebP)
-├── video/           # Video files (MP4, WebM, OGG)
-├── audio/           # Audio files (MP3, WAV, OGG)
-├── documents/       # PDF guides, markdown docs
-├── models/          # 3D models (GLTF, GLB, OBJ, FBX)
-└── fonts/           # Custom font files (WOFF, WOFF2, TTF, OTF)
+├── images/          # PNG, JPG, SVG, WebP graphics and icons
+├── video/           # MP4, WebM video tutorials and demos
+├── audio/           # MP3, WAV, OGG sound effects and music
+├── documents/       # PDF, MD, TXT research papers and documentation
+├── models/          # GLB, GLTF, OBJ 3D models for visualization
+└── fonts/           # TTF, WOFF, WOFF2 custom typefaces
 ```
 
 ## Usage Guidelines
 
 ### Importing Assets
 
-Always import assets explicitly rather than using string paths:
+Always import assets explicitly in your TypeScript/React files:
 
 ```typescript
-// ✅ CORRECT
-import logo from '@/assets/images/crowelogo.png'
-<img src={logo} alt="Crowe Code" />
+// ✅ CORRECT - Import assets explicitly
+import myLogo from '@/assets/images/crowelogo.png'
+import myModel from '@/assets/models/molecule.glb'
+import myVideo from '@/assets/video/tutorial.mp4'
 
-// ❌ WRONG
-<img src="@/assets/images/crowelogo.png" alt="Crowe Code" />
+// Then use in JSX
+<img src={myLogo} alt="Logo" />
+<video src={myVideo} />
 ```
-
-### Using the Asset Manager
-
-For dynamic asset loading, use the asset manager utility:
 
 ```typescript
-import { getAssetUrl, preloadAssets } from '@/lib/asset-manager'
-
-// Get a single asset
-const logoUrl = await getAssetUrl('images', 'logo')
-
-// Preload multiple assets
-await preloadAssets([
-  { category: 'images', name: 'logo' },
-  { category: 'models', name: 'scene' },
-])
+// ❌ WRONG - Don't use string paths
+<img src="@/assets/images/crowelogo.png" />
 ```
 
-## Asset Categories
+### Asset Categories
 
-### Images
-- **Format**: PNG, JPG, SVG, WebP
-- **Max Size**: 2MB recommended
-- **Use Cases**: Logos, icons, UI elements, thumbnails
+1. **Images** (`/images/`)
+   - Logos, icons, UI graphics
+   - Supported: PNG, JPG, SVG, WebP
+   - Use cases: Branding, UI elements, diagrams
 
-### Video
-- **Format**: MP4 (H.264), WebM, OGG
-- **Max Size**: 10MB recommended
-- **Use Cases**: Tutorials, demos, AR/VR recordings
+2. **Videos** (`/video/`)
+   - Tutorial videos, feature demos
+   - Supported: MP4, WebM
+   - Use cases: Onboarding, help system, feature showcases
 
-### Audio
-- **Format**: MP3, WAV, OGG
-- **Max Size**: 1MB recommended
-- **Use Cases**: Voice commands, notifications, sound effects
+3. **Audio** (`/audio/`)
+   - Sound effects, notification sounds
+   - Supported: MP3, WAV, OGG
+   - Use cases: UI feedback, notifications, voice samples
 
-### Documents
-- **Format**: PDF, MD, TXT
-- **Max Size**: 5MB recommended
-- **Use Cases**: User guides, research papers, documentation
+4. **Documents** (`/documents/`)
+   - Research papers, documentation, guides
+   - Supported: PDF, MD, TXT
+   - Use cases: Help documentation, research references
 
-### 3D Models
-- **Format**: GLTF, GLB, OBJ, FBX
-- **Max Size**: 5MB recommended
-- **Use Cases**: VR/AR scenes, 3D visualizations, holographic displays
+5. **3D Models** (`/models/`)
+   - 3D visualization assets
+   - Supported: GLB, GLTF, OBJ
+   - Use cases: Molecular structures, code visualizations, VR/AR content
 
-### Fonts
-- **Format**: WOFF, WOFF2, TTF, OTF
-- **Max Size**: 500KB recommended
-- **Use Cases**: Custom typography, branding
-
-## Best Practices
-
-1. **Optimize Before Upload**
-   - Compress images with tools like TinyPNG or ImageOptim
-   - Convert videos to web-optimized formats
-   - Use GLTF/GLB for 3D models (better compression)
-
-2. **Naming Conventions**
-   - Use kebab-case: `my-asset-name.png`
-   - Be descriptive: `vr-workspace-tutorial.mp4`
-   - Include version if needed: `logo-v2.png`
-
-3. **File Size Limits**
-   - Keep assets under recommended limits
-   - Use lazy loading for large assets
-   - Implement progressive loading for videos
-
-4. **Security**
-   - Never commit sensitive data
-   - Use environment variables for API keys
-   - Validate file types on upload
+6. **Fonts** (`/fonts/`)
+   - Custom typefaces
+   - Supported: TTF, WOFF, WOFF2
+   - Use cases: Custom branding, specialized code fonts
 
 ## Asset Protection
 
-The platform includes built-in asset protection features:
+The Asset Manager provides built-in protection features:
 
-- **Checksum Validation**: All assets are validated for integrity
-- **Secure Storage**: Assets are stored with encrypted metadata
-- **Version Control**: Track asset changes and rollback if needed
-- **Access Control**: Owner-only assets remain protected
+- **Protected Assets**: Mark critical assets as protected to prevent accidental deletion
+- **Tagging System**: Organize assets with tags for easy searching and filtering
+- **Metadata**: Add descriptions and custom metadata to assets
+- **Version Control**: Track asset versions and changes
+- **Search**: Full-text search across names, tags, and descriptions
 
-## Adding New Assets
+### Protecting an Asset
 
-1. Place the file in the appropriate subdirectory
-2. Update the asset registry in `src/lib/asset-manager.ts`
-3. Import and use the asset in your components
-4. Test on all target devices (desktop, mobile, VR)
+```typescript
+import { assetManager } from '@/lib/asset-manager'
 
-## Performance Considerations
+// Mark an asset as protected
+assetManager.updateAsset('asset-id', {
+  protected: true,
+  tags: ['logo', 'branding', 'critical'],
+  description: 'Main Crowe Code logo - do not delete'
+})
+```
 
-- **Lazy Load**: Use dynamic imports for large assets
-- **Preload Critical**: Preload assets needed for initial render
-- **CDN**: Consider using a CDN for production deployments
-- **Caching**: Implement proper cache headers for static assets
+## Best Practices
 
-## Supported Formats
+### File Naming
+- Use lowercase with hyphens: `crowe-logo.png`, `tutorial-intro.mp4`
+- Be descriptive: `molecule-structure-3d.glb` instead of `model1.glb`
+- Include version if needed: `logo-v2.png`
 
-| Category  | Formats                    | Notes                          |
-|-----------|----------------------------|--------------------------------|
-| Images    | PNG, JPG, SVG, WebP        | WebP preferred for photos      |
-| Video     | MP4, WebM, OGG             | MP4 (H.264) for best support   |
-| Audio     | MP3, WAV, OGG              | MP3 for compatibility          |
-| Documents | PDF, MD, TXT               | MD for in-app rendering        |
-| 3D Models | GLTF, GLB, OBJ, FBX        | GLB preferred (binary GLTF)    |
-| Fonts     | WOFF, WOFF2, TTF, OTF      | WOFF2 for modern browsers      |
+### Organization
+- Group related assets in subdirectories when needed
+- Use consistent naming conventions within categories
+- Document any special requirements in asset metadata
 
-## Questions?
+### Optimization
+- Compress images before adding (use WebP when possible)
+- Keep video files under 10MB when possible
+- Use appropriate quality settings for your use case
 
-Refer to the main documentation or contact the platform owner.
+### Security
+- Never commit sensitive documents
+- Mark proprietary assets as protected
+- Use appropriate file permissions
+
+## Asset Management Features
+
+Access the Asset Manager from the toolbar (folder icon) to:
+
+- **Browse** all assets by category
+- **Search** across all asset metadata
+- **Tag** assets for organization
+- **Protect** critical assets from deletion
+- **Export** asset lists for documentation
+- **View** detailed statistics and metrics
+
+## Integration with Data Protection
+
+Assets are automatically included in backups created through the Data Protection system:
+
+- Full asset metadata is preserved
+- Protected status is maintained
+- Tags and descriptions are backed up
+- Restore operations include all asset information
+
+## API Reference
+
+For programmatic asset management, see `/src/lib/asset-manager.ts`:
+
+```typescript
+import { assetManager } from '@/lib/asset-manager'
+
+// Get all assets
+const allAssets = assetManager.getAllAssets()
+
+// Get assets by type
+const images = assetManager.getAssetsByType('image')
+
+// Search assets
+const results = assetManager.searchAssets('logo')
+
+// Get protected assets
+const protected = assetManager.getProtectedAssets()
+
+// Get statistics
+const stats = assetManager.getAssetStats()
+```
+
+## Support
+
+For questions or issues with asset management, refer to:
+- Asset Manager panel in the application
+- `/src/lib/asset-manager.ts` for technical details
+- `/src/components/AssetManager.tsx` for UI implementation
