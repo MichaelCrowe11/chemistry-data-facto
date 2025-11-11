@@ -95,7 +95,7 @@ export function Performance3DSettings({
     return { level: 'Poor', color: 'text-red-400', badge: 'bg-red-500' };
   };
 
-  const performance = getPerformanceLevel();
+  const performanceLevel = getPerformanceLevel();
 
   const presets = [
     {
@@ -178,11 +178,11 @@ export function Performance3DSettings({
 
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">FPS:</span>
-            <Badge className={`${performance.badge} text-white`}>
+            <Badge className={`${performanceLevel.badge} text-white`}>
               {fps}
             </Badge>
-            <span className={`text-xs ${performance.color}`}>
-              {performance.level}
+            <span className={`text-xs ${performanceLevel.color}`}>
+              {performanceLevel.level}
             </span>
           </div>
         </div>
