@@ -31,7 +31,7 @@ import { ResearchPaperPanel } from '@/components/ResearchPaperPanel'
 import { ExperimentTrackingPanel } from '@/components/ExperimentTrackingPanel'
 import { ReproducibilityEngine } from '@/components/ReproducibilityEngine'
 import { detectLanguage, generateId } from '@/lib/editor-utils'
-import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask, Package, Gear, ImageSquare, Eye, MapPin, Desktop, Microphone, Question, Video } from '@phosphor-icons/react'
+import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask, Package, Gear, ImageSquare, Eye, MapPin, Desktop, Microphone, Question, Video, Target } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
@@ -49,6 +49,7 @@ import { VoiceCodingPanel } from '@/components/VoiceCodingPanel'
 import { OnboardingTour } from '@/components/OnboardingTour'
 import { QuickStartTips } from '@/components/QuickStartTips'
 import { VideoTutorialPanel } from '@/components/VideoTutorialPanel'
+import { CodeChallengesPanel } from '@/components/CodeChallengesPanel'
 
 function App() {
   const [userId, setUserId] = useState<string>('')
@@ -60,7 +61,7 @@ function App() {
   const [sidebarVisible, setSidebarVisible] = useState(true)
   const [aiChatVisible, setAiChatVisible] = useState(false)
   const [selectedCode, setSelectedCode] = useState('')
-  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | 'reproducibility' | 'gallery3d' | 'voice' | 'tutorials' | null>('papers')
+  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | 'reproducibility' | 'gallery3d' | 'voice' | 'tutorials' | 'challenges' | null>('papers')
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [performanceConfig, setPerformanceConfig] = useState<Performance3DConfig | null>(null)
   const [vrMode, setVrMode] = useState<'code' | 'workspace' | null>(null)
@@ -356,6 +357,17 @@ function App() {
             data-tour="tutorials"
           >
             <Video className="h-5 w-5 text-purple-400" weight={rightPanel === 'tutorials' ? 'fill' : 'duotone'} />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => setRightPanel(rightPanel === 'challenges' ? null : 'challenges')}
+            className="h-8 w-8 bg-gradient-to-r from-blue-500/20 to-cyan-500/20"
+            title="Code Challenges"
+            aria-label="Code Challenges"
+            data-tour="challenges"
+          >
+            <Target className="h-5 w-5 text-cyan-400" weight={rightPanel === 'challenges' ? 'fill' : 'duotone'} />
           </Button>
           <div className="text-xs text-muted-foreground hidden sm:block">
             v9.0.0 VR/AR Edition
@@ -875,10 +887,32 @@ function App() {
                           toast.info('Create a file first')
                         }
                         break
+                      case 'challenges':
+                        setRightPanel('challenges')
+                        break
                       default:
                         break
                     }
                     toast.success('Feature activated! Follow the tutorial steps.')
+                  }}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'challenges' && (
+              <div className="w-96 shrink-0">
+                <CodeChallengesPanel
+                  onClose={() => setRightPanel(null)}
+                  onCodeInsert={(code) => {
+                    if (activeTab) {
+                      handleContentChange(activeTab.content + '\n\n' + code)
+                      toast.success('Code inserted into editor')
+                    } else {
+                      const fileName = prompt('Create new file for challenge code:')
+                      if (fileName) {
+                        handleFileCreate(fileName)
+                      }
+                    }
                   }}
                 />
               </div>

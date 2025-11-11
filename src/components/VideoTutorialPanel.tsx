@@ -26,7 +26,8 @@ import {
   Star,
   CheckCircle,
   BookOpen,
-  Trophy
+  Trophy,
+  Target
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 
@@ -52,6 +53,7 @@ interface Tutorial {
   icon: any
   tags: string[]
   completed?: boolean
+  relatedChallenges?: string[]
 }
 
 interface TutorialStep {
@@ -59,6 +61,7 @@ interface TutorialStep {
   title: string
   description: string
   action?: string
+  challengeId?: string
 }
 
 interface VideoTutorialPanelProps {
@@ -67,6 +70,24 @@ interface VideoTutorialPanelProps {
 }
 
 const tutorials: Tutorial[] = [
+  {
+    id: 'javascript-basics',
+    title: 'JavaScript Coding Basics',
+    description: 'Master JavaScript fundamentals with interactive challenges and hands-on practice.',
+    duration: '6:00',
+    category: 'basics',
+    difficulty: 'beginner',
+    videoUrl: 'js-basics-demo',
+    icon: BookOpen,
+    tags: ['JavaScript', 'Beginner', 'Practice', 'Challenges'],
+    relatedChallenges: ['hello-world-js', 'sum-two-numbers', 'reverse-string'],
+    steps: [
+      { timestamp: 0, title: 'Introduction to Functions', description: 'Learn function syntax and return statements', challengeId: 'hello-world-js' },
+      { timestamp: 60, title: 'Working with Parameters', description: 'Practice using function parameters', challengeId: 'sum-two-numbers' },
+      { timestamp: 150, title: 'String Manipulation', description: 'Master string methods and transformations', challengeId: 'reverse-string' },
+      { timestamp: 270, title: 'Array Operations', description: 'Learn to work with arrays', challengeId: 'find-largest' }
+    ]
+  },
   {
     id: 'vr-workspace',
     title: 'VR Workspace Immersion',
@@ -434,8 +455,9 @@ export function VideoTutorialPanel({ onClose, onStartFeature }: VideoTutorialPan
             </div>
 
             <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-              <TabsList className="grid grid-cols-3 w-full">
+              <TabsList className="grid grid-cols-4 w-full">
                 <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
+                <TabsTrigger value="basics" className="text-xs">Basics</TabsTrigger>
                 <TabsTrigger value="vr-ar" className="text-xs">VR/AR</TabsTrigger>
                 <TabsTrigger value="voice" className="text-xs">Voice</TabsTrigger>
               </TabsList>
@@ -594,7 +616,7 @@ export function VideoTutorialPanel({ onClose, onStartFeature }: VideoTutorialPan
                         <CardDescription className="text-xs mt-1">
                           {step.description}
                         </CardDescription>
-                        <div className="flex items-center gap-2 mt-2">
+                        <div className="flex items-center gap-2 mt-2 flex-wrap">
                           <Badge variant="outline" className="text-xs">
                             {Math.floor(step.timestamp / 60)}:{(step.timestamp % 60).toString().padStart(2, '0')}
                           </Badge>
@@ -610,6 +632,20 @@ export function VideoTutorialPanel({ onClose, onStartFeature }: VideoTutorialPan
                             >
                               <Sparkle className="h-3 w-3 mr-1" />
                               Try Now
+                            </Button>
+                          )}
+                          {step.challengeId && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-6 text-xs bg-cyan-500/10 border-cyan-500/30 hover:bg-cyan-500/20"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleStepAction('challenges')
+                              }}
+                            >
+                              <Target className="h-3 w-3 mr-1" />
+                              Practice
                             </Button>
                           )}
                         </div>

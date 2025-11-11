@@ -229,6 +229,20 @@ A research development platform that connects academic papers to production code
 - **Progression**: Identify resource → Fetch metadata → Generate BibTeX → Add to bibliography → Insert inline citation → Export .bib file
 - **Success criteria**: Accurate metadata, multiple formats (BibTeX, APA, MLA), DOI resolution, dataset citations, software citations
 
+### Video Tutorial System (ENHANCED - NEW)
+- **Functionality**: Comprehensive video tutorial library with interactive step-by-step guides for all features
+- **Purpose**: Onboard users quickly and provide reference material for complex features
+- **Trigger**: User clicks video icon or views tutorial from onboarding
+- **Progression**: Browse tutorials → Select topic → Watch video → Follow steps → Click "Try Now" → Feature activates → Click "Practice" → Open related challenge → Complete interactive practice
+- **Success criteria**: 12+ tutorials covering all features, progress tracking, bookmarks, achievement system, seamless feature activation, integrated with code challenges
+
+### Interactive Code Challenges (LEARNING - NEW)
+- **Functionality**: Gamified coding challenges with real-time test execution, hints, XP rewards, and progress tracking
+- **Purpose**: Provide hands-on practice for learning programming concepts with instant feedback
+- **Trigger**: User clicks target/challenges icon or "Practice" button in tutorials
+- **Progression**: Browse challenges by category/difficulty → Select challenge → Read objectives → Write code → Run tests → View results → Use hints if needed → Earn XP → Track stats → Build daily streak → Insert solution to editor
+- **Success criteria**: 10+ challenges across difficulty levels, real-time test execution, multi-level hints, XP/streak system, detailed progress stats, tutorial integration, code editor insertion
+
 ### Code Performance Profiler (REVOLUTIONARY - NEW)
 - **Functionality**: Visual performance profiling showing execution time for each line, identifying bottlenecks in real-time
 - **Purpose**: Optimize code performance with precise line-level timing data
