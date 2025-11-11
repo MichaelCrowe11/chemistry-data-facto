@@ -122,15 +122,7 @@ export function useVoiceCommands(commands: VoiceCommand[]) {
       for (const pattern of command.patterns) {
         const match = normalizedTranscript.match(pattern)
         if (match) {
-          toast.success(
-            <div>
-              <div className="font-semibold">Voice Command Recognized</div>
-              <div className="text-xs mt-1">{command.description}</div>
-              <div className="text-xs text-muted-foreground">Confidence: {Math.round(confidence * 100)}%</div>
-            </div>,
-            { duration: 2000 }
-          )
-          
+          toast.success(`Voice Command: ${command.description} (${Math.round(confidence * 100)}%)`, { duration: 2000 })
           command.action()
           return
         }
@@ -138,13 +130,7 @@ export function useVoiceCommands(commands: VoiceCommand[]) {
     }
 
     if (confidence > 0.7) {
-      toast.info(
-        <div>
-          <div className="font-semibold">Command not recognized</div>
-          <div className="text-xs mt-1">"{transcript}"</div>
-        </div>,
-        { duration: 2000 }
-      )
+      toast.info(`Command not recognized: "${transcript}"`, { duration: 2000 })
     }
   }, [commands])
 

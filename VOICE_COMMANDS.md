@@ -2,7 +2,7 @@
 
 ## Overview
 
-Crowe Code's Voice Commands feature enables completely hands-free coding, perfect for VR/AR immersive environments where keyboard input is impractical. Using advanced speech recognition and AI-powered code generation, you can dictate code, execute IDE commands, and navigate your workspace entirely by voice.
+Crowe Code's Voice Commands feature enables completely hands-free coding, perfect for VR/AR immersive environments where keyboard input is impractical. Using advanced speech recognition and AI-powered code generation, you can dictate code, execute IDE commands, navigate your workspace, and **train custom voice commands** entirely by voice.
 
 ## Features
 
@@ -11,6 +11,17 @@ Crowe Code's Voice Commands feature enables completely hands-free coding, perfec
 - **High Accuracy**: Multi-alternative recognition with confidence scoring
 - **Real-time Feedback**: See your speech transcribed in real-time
 - **Error Handling**: Graceful degradation with clear error messages
+
+### ⚡ Custom Voice Command Training (NEW!)
+- **Personalized Commands**: Create your own voice commands tailored to your workflow
+- **Natural Speech Patterns**: Train with 3-5 samples of how YOU naturally say commands
+- **Multiple Action Types**: 
+  - Insert pre-defined code snippets
+  - AI-powered code generation from instructions
+  - Execute editor commands
+  - Run custom JavaScript
+- **Command Management**: Enable/disable, test, and delete custom commands
+- **Persistent Learning**: Commands saved and ready across sessions
 
 ### 🤖 AI-Powered Code Dictation
 - **Natural Language to Code**: Describe what you want in plain English
@@ -42,6 +53,26 @@ Voice commands require the Web Speech API, which is supported in:
 3. Click "Start Voice Commands"
 4. You'll see a "Listening" badge when active
 
+### Training Your First Custom Command
+
+1. Open the Voice Coding Panel (microphone icon in toolbar)
+2. Click the "Custom" tab to see the count of active commands
+3. Click "Train New Command"
+4. Fill in command details:
+   - **Name**: e.g., "Create React Component"
+   - **Description**: What it does
+5. Record 3-5 voice samples:
+   - Click "Record Sample" and speak naturally
+   - Try variations: "make a component", "create component", "new component"
+6. Choose action type:
+   - **Insert Code**: Paste a pre-written snippet
+   - **AI Generate**: Let AI create code from your instructions
+   - **Run Command**: Execute an editor function
+   - **Custom Script**: Write JavaScript with access to `onCodeInsert(code)` and `currentLanguage`
+7. Click "Create Command"
+
+Your custom command is now active and will respond to any of your trained phrases!
+
 ### Microphone Permissions
 
 If you see "Microphone access denied":
@@ -49,6 +80,67 @@ If you see "Microphone access denied":
 2. Set Microphone to "Allow"
 3. Refresh the page
 4. Try again
+
+## Custom Command Examples
+
+Here are some powerful custom command examples to inspire your workflow:
+
+### Example 1: React Component Generator
+- **Name**: "Create React Component"
+- **Training Phrases**: 
+  - "make a component"
+  - "create react component"
+  - "new component please"
+- **Action Type**: AI Generate
+- **Prompt**: "Create a React functional component with TypeScript. Include props interface, proper typing, and basic JSX structure."
+
+### Example 2: Console Log Snippet
+- **Name**: "Debug Log"
+- **Training Phrases**:
+  - "debug this"
+  - "log it"
+  - "console log"
+- **Action Type**: Insert Code
+- **Code**: `console.log('DEBUG:', );`
+
+### Example 3: Error Handler Template
+- **Name**: "Add Error Handler"
+- **Training Phrases**:
+  - "error handling"
+  - "catch errors"
+  - "handle exceptions"
+- **Action Type**: Insert Code
+- **Code**: 
+```javascript
+try {
+  
+} catch (error) {
+  console.error('Error:', error.message);
+  toast.error('Something went wrong');
+}
+```
+
+### Example 4: Timestamp Injector
+- **Name**: "Insert Timestamp"
+- **Training Phrases**:
+  - "add timestamp"
+  - "current time"
+  - "time stamp"
+- **Action Type**: Custom Script
+- **Script**: 
+```javascript
+const timestamp = new Date().toISOString();
+onCodeInsert(`// Generated at ${timestamp}\n`);
+```
+
+### Example 5: API Fetch Template
+- **Name**: "Fetch Data"
+- **Training Phrases**:
+  - "fetch api"
+  - "get data"
+  - "api call"
+- **Action Type**: AI Generate
+- **Prompt**: "Create an async function that fetches data from an API using fetch, includes error handling, and returns the JSON response"
 
 ## Available Commands
 
@@ -174,6 +266,41 @@ Code in your physical space:
 6. Walk around your code while editing
 
 ## Advanced Usage
+
+### Custom Voice Commands
+
+Create personalized commands that match YOUR natural speech patterns:
+
+**Benefits:**
+- Works with how YOU naturally speak
+- No need to memorize exact phrases
+- Adapts to your unique workflow
+- Persistent across sessions
+- Combine with AI for powerful automation
+
+**Command Management:**
+- **Active Commands**: Show in green gradient cards, respond to voice
+- **Inactive Commands**: Grayed out, click X to re-enable
+- **Test Button**: Try a command without speaking
+- **Delete**: Remove commands you no longer need
+
+**Action Types Explained:**
+
+1. **Insert Code**: Best for snippets you use repeatedly
+   - Example: React component template, API call structure
+   - No AI processing = instant insertion
+   
+2. **AI Generate**: Best for variations and complex code
+   - Example: "Create a component that..." with different requirements each time
+   - Uses GPT-4 to generate contextual code
+   
+3. **Run Command**: Execute built-in editor functions
+   - Example: 'save', 'format', 'run'
+   - Fastest execution
+   
+4. **Custom Script**: Full JavaScript control
+   - Access to `onCodeInsert(code)` and `currentLanguage`
+   - Example: `onCodeInsert('// TODO: ' + new Date().toLocaleDateString())`
 
 ### Chaining Commands
 
@@ -314,7 +441,7 @@ Even with voice enabled, keyboard shortcuts still work:
 
 Planned features for voice commands:
 
-- [ ] Custom voice commands (user-defined)
+- [x] Custom voice commands with natural language training
 - [ ] Multi-language speech recognition (non-English)
 - [ ] Voice-controlled debugging ("set breakpoint", "step over")
 - [ ] Collaborative voice sessions (multiple speakers)
@@ -322,6 +449,8 @@ Planned features for voice commands:
 - [ ] Offline speech recognition (no internet required)
 - [ ] Voice-controlled git operations
 - [ ] Natural language refactoring ("extract this into a function")
+- [ ] Voice command sharing (export/import custom commands)
+- [ ] Adaptive learning (system learns from corrections)
 
 ## Examples
 
