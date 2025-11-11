@@ -10,9 +10,11 @@ import { Separator } from '@/components/ui/separator'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Microphone, Plus, Trash, Play, BookmarkSimple, Lightning, Code, Sparkle, Check, X } from '@phosphor-icons/react'
+import { Slider } from '@/components/ui/slider'
+import { Microphone, Plus, Trash, Play, BookmarkSimple, Lightning, Code, Sparkle, Check, X, ChartBar, Tag } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
+import { VoiceAnalyticsDashboard } from './VoiceAnalyticsDashboard'
 
 interface CustomVoiceCommand {
   id: string
@@ -24,6 +26,10 @@ interface CustomVoiceCommand {
   createdAt: Date
   trainingSamples: string[]
   isActive: boolean
+  confidenceThreshold?: number
+  useCount?: number
+  lastUsed?: Date
+  tags?: string[]
 }
 
 interface CustomVoiceCommandTrainerProps {
@@ -43,6 +49,8 @@ export function CustomVoiceCommandTrainer({
   const [currentRecordingIndex, setCurrentRecordingIndex] = useState(0)
   const [recordedSamples, setRecordedSamples] = useState<string[]>([])
   const [recognition, setRecognition] = useState<any>(null)
+  const [showAnalytics, setShowAnalytics] = useState(false)
+  const [newTag, setNewTag] = useState('')
 
   const [newCommand, setNewCommand] = useState<Partial<CustomVoiceCommand>>({
     name: '',
@@ -52,6 +60,9 @@ export function CustomVoiceCommandTrainer({
     actionData: '',
     trainingSamples: [],
     isActive: true,
+    confidenceThreshold: 0.7,
+    useCount: 0,
+    tags: [],
   })
 
   useEffect(() => {
@@ -105,6 +116,9 @@ export function CustomVoiceCommandTrainer({
       createdAt: new Date(),
       trainingSamples: recordedSamples,
       isActive: true,
+      confidenceThreshold: newCommand.confidenceThreshold || 0.7,
+      useCount: 0,
+      tags: newCommand.tags || [],
     }
 
     setCustomCommands(prev => [...(prev || []), command])
@@ -112,7 +126,7 @@ export function CustomVoiceCommandTrainer({
     toast.success(
       <div>
         <div className="font-semibold">Custom Command Created!</div>
-        <div className="text-xs mt-1">"{command.name}" is now active</div>
+        <div className="text-xs mt-1">"{command.name}" with {recordedSamples.length} voice samples</div>
       </div>
     )
 
@@ -129,6 +143,9 @@ export function CustomVoiceCommandTrainer({
       actionData: '',
       trainingSamples: [],
       isActive: true,
+      confidenceThreshold: 0.7,
+      useCount: 0,
+      tags: [],
     })
     setRecordedSamples([])
     setCurrentRecordingIndex(0)
@@ -149,6 +166,14 @@ export function CustomVoiceCommandTrainer({
 
   const testCommand = useCallback(async (command: CustomVoiceCommand) => {
     toast.info(`Testing command: ${command.name}`)
+    
+    setCustomCommands(prev => 
+      (prev || []).map(cmd => 
+        cmd.id === command.id 
+          ? { ...cmd, useCount: (cmd.useCount || 0) + 1, lastUsed: new Date() }
+          : cmd
+      )
+    )
     
     switch (command.actionType) {
       case 'insert-code':
@@ -188,10 +213,31 @@ Only return the code, no explanations.`
         }
         break
     }
-  }, [onCodeInsert, onCommandExecute, currentLanguage])
+  }, [onCodeInsert, onCommandExecute, currentLanguage, setCustomCommands])
 
   const activeCommands = (customCommands || []).filter(cmd => cmd.isActive)
   const inactiveCommands = (customCommands || []).filter(cmd => !cmd.isActive)
+
+  const addTag = useCallback(() => {
+    if (!newTag.trim()) return
+    
+    setNewCommand(prev => ({
+      ...prev,
+      tags: [...(prev.tags || []), newTag.trim()]
+    }))
+    setNewTag('')
+  }, [newTag])
+
+  const removeTag = useCallback((tag: string) => {
+    setNewCommand(prev => ({
+      ...prev,
+      tags: (prev.tags || []).filter(t => t !== tag)
+    }))
+  }, [])
+
+  if (showAnalytics) {
+    return <VoiceAnalyticsDashboard onClose={() => setShowAnalytics(false)} />
+  }
 
   return (
     <div className="h-full flex flex-col bg-[var(--card)] border-l border-border">
@@ -206,15 +252,24 @@ Only return the code, no explanations.`
           </Badge>
         </div>
 
-        <Button
-          onClick={() => setIsTrainingDialogOpen(true)}
-          variant="default"
-          className="w-full"
-          size="sm"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Train New Command
-        </Button>
+        <div className="flex gap-2 mb-3">
+          <Button
+            onClick={() => setIsTrainingDialogOpen(true)}
+            variant="default"
+            className="flex-1"
+            size="sm"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Train New
+          </Button>
+          <Button
+            onClick={() => setShowAnalytics(true)}
+            variant="outline"
+            size="sm"
+          >
+            <ChartBar className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       <ScrollArea className="flex-1 p-4">
@@ -230,15 +285,30 @@ Only return the code, no explanations.`
                   <Card key={cmd.id} className="p-3 bg-gradient-to-r from-primary/10 to-accent/10">
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div className="flex-1">
-                        <div className="text-sm font-semibold flex items-center gap-2">
+                        <div className="text-sm font-semibold flex items-center gap-2 flex-wrap">
                           {cmd.name}
                           <Badge variant="secondary" className="text-[10px]">
                             {cmd.actionType}
                           </Badge>
+                          {(cmd.useCount || 0) > 0 && (
+                            <Badge variant="outline" className="text-[10px]">
+                              {cmd.useCount} uses
+                            </Badge>
+                          )}
                         </div>
                         <div className="text-xs text-muted-foreground mt-1">
                           {cmd.description}
                         </div>
+                        {cmd.tags && cmd.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {cmd.tags.map((tag, i) => (
+                              <Badge key={i} variant="outline" className="text-[10px]">
+                                <Tag className="h-2 w-2 mr-1" />
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <div className="flex gap-1">
                         <Button
@@ -437,6 +507,76 @@ Only return the code, no explanations.`
                     )}
                   </AnimatePresence>
                 </div>
+              </div>
+
+              <Separator />
+
+              <div>
+                <Label htmlFor="confidence-threshold">
+                  Recognition Sensitivity
+                  <span className="ml-2 text-xs text-muted-foreground">
+                    ({Math.round((newCommand.confidenceThreshold || 0.7) * 100)}%)
+                  </span>
+                </Label>
+                <div className="bg-muted/30 rounded-lg p-4 space-y-3">
+                  <Slider
+                    id="confidence-threshold"
+                    min={50}
+                    max={95}
+                    step={5}
+                    value={[(newCommand.confidenceThreshold || 0.7) * 100]}
+                    onValueChange={(values) => 
+                      setNewCommand(prev => ({ ...prev, confidenceThreshold: values[0] / 100 }))
+                    }
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>More flexible (may trigger incorrectly)</span>
+                    <span>More strict (may miss variations)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="tags">Tags (optional)</Label>
+                <div className="flex gap-2 mb-2">
+                  <Input
+                    id="tags"
+                    placeholder="Add a tag..."
+                    value={newTag}
+                    onChange={(e) => setNewTag(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        addTag()
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={addTag}
+                    disabled={!newTag.trim()}
+                  >
+                    Add
+                  </Button>
+                </div>
+                {(newCommand.tags || []).length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {(newCommand.tags || []).map((tag, i) => (
+                      <Badge key={i} variant="secondary" className="text-xs">
+                        <Tag className="h-3 w-3 mr-1" />
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => removeTag(tag)}
+                          className="ml-2 hover:text-destructive"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <Separator />
