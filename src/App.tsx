@@ -31,7 +31,7 @@ import { ResearchPaperPanel } from '@/components/ResearchPaperPanel'
 import { ExperimentTrackingPanel } from '@/components/ExperimentTrackingPanel'
 import { ReproducibilityEngine } from '@/components/ReproducibilityEngine'
 import { detectLanguage, generateId } from '@/lib/editor-utils'
-import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask, Package, Gear, ImageSquare, Eye, MapPin, Desktop } from '@phosphor-icons/react'
+import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask, Package, Gear, ImageSquare, Eye, MapPin, Desktop, Microphone } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
@@ -45,6 +45,7 @@ import { Gallery3D } from '@/components/3DGallery'
 import { VRCodeSpace } from '@/components/VRCodeSpace'
 import { ARCodeOverlay } from '@/components/ARCodeOverlay'
 import { VRWorkspace } from '@/components/VRWorkspace'
+import { VoiceCodingPanel } from '@/components/VoiceCodingPanel'
 
 function App() {
   const [userId, setUserId] = useState<string>('')
@@ -56,7 +57,7 @@ function App() {
   const [sidebarVisible, setSidebarVisible] = useState(true)
   const [aiChatVisible, setAiChatVisible] = useState(false)
   const [selectedCode, setSelectedCode] = useState('')
-  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | 'reproducibility' | 'gallery3d' | null>('papers')
+  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | 'reproducibility' | 'gallery3d' | 'voice' | null>('papers')
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [performanceConfig, setPerformanceConfig] = useState<Performance3DConfig | null>(null)
   const [vrMode, setVrMode] = useState<'code' | 'workspace' | null>(null)
@@ -295,6 +296,16 @@ function App() {
               </Button>
             </>
           )}
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => setRightPanel(rightPanel === 'voice' ? null : 'voice')}
+            className="h-8 w-8 bg-gradient-to-r from-pink-500/20 to-rose-500/20"
+            title="Voice Commands (VR/AR Hands-Free)"
+            aria-label="Voice Commands"
+          >
+            <Microphone className="h-5 w-5 text-pink-400" weight={rightPanel === 'voice' ? 'fill' : 'duotone'} />
+          </Button>
           <Button
             size="icon"
             variant="ghost"
@@ -717,6 +728,55 @@ function App() {
                   onClose={() => setRightPanel(null)}
                   currentCode={activeTab?.content}
                   currentLanguage={activeTab?.language}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'voice' && (
+              <div className="w-96 shrink-0">
+                <VoiceCodingPanel
+                  onCodeInsert={(code) => {
+                    if (activeTab) {
+                      handleContentChange(activeTab.content + '\n' + code)
+                    } else {
+                      toast.info('Please open a file first')
+                    }
+                  }}
+                  onCommand={(cmd, args) => {
+                    switch (cmd) {
+                      case 'save':
+                        saveCurrentFile()
+                        break
+                      case 'newFile':
+                        const fileName = prompt('Enter file name:')
+                        if (fileName) handleFileCreate(fileName)
+                        break
+                      case 'closeFile':
+                        if (safeActiveTabId) handleTabClose(safeActiveTabId)
+                        break
+                      case 'undo':
+                        toast.info('Undo functionality')
+                        break
+                      case 'redo':
+                        toast.info('Redo functionality')
+                        break
+                      case 'format':
+                        toast.info('Format code functionality')
+                        break
+                      case 'run':
+                        setRightPanel('execution')
+                        break
+                      case 'comment':
+                        toast.info('Comment line functionality')
+                        break
+                      case 'deleteLine':
+                        toast.info('Delete line functionality')
+                        break
+                      default:
+                        break
+                    }
+                  }}
+                  language={activeTab?.language}
                 />
               </div>
             )}

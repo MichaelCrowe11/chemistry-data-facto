@@ -166,6 +166,13 @@ A research development platform that connects academic papers to production code
 - **Progression**: Search papers → Preview abstract → Extract code snippets → Generate implementation from algorithm description → Link to original paper → Add citation
 - **Success criteria**: Searches return relevant papers in <2s, code extraction 70%+ accuracy, proper citations generated, links maintained in code comments
 
+### Voice Commands for Hands-Free Coding (VR/AR - NEW - IMPLEMENTED)
+- **Functionality**: Complete hands-free IDE control via voice commands with AI-powered code dictation for VR/AR immersive environments
+- **Purpose**: Enable coding without keyboard in VR/AR, accessibility for hands-free operation, natural code creation through speech
+- **Trigger**: User clicks microphone icon or says "activate voice"
+- **Progression**: Click mic → Grant permissions → Say "start dictation" → Speak code description → Say "stop dictation" → AI converts to code → Review and insert
+- **Success criteria**: 90%+ command recognition accuracy, code generation in <3s, works in VR/AR modes, supports 15+ voice commands, real-time transcription feedback
+
 ### Experiment Tracking & Versioning (RESEARCH VALUE - NEW)
 - **Functionality**: Track ML experiments, hyperparameters, results, and model versions with automatic logging and comparison
 - **Purpose**: Enable reproducible research and easy comparison of experimental results
