@@ -1,0 +1,40 @@
+# Fly.io deployment configuration for Crowe Code 3D Edition
+
+app = "crowe-code"
+primary_region = "iad"
+
+[build]
+  [build.args]
+    NODE_VERSION = "20"
+
+[env]
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "requests"
+    hard_limit = 250
+    soft_limit = 200
+
+[[http_service.checks]]
+  interval = "10s"
+  timeout = "2s"
+  grace_period = "5s"
+  method = "GET"
+  path = "/"
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+[[statics]]
+  guest_path = "/app/dist"
+  url_prefix = "/"

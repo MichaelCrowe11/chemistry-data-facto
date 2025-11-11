@@ -17,19 +17,28 @@ interface LiveExecutionPanelProps {
   code: string
   language: string
   onBreakpointHit?: (line: number, variables: Record<string, any>) => void
+  onRunComplete?: (summary: {
+    durationMs: number
+    logs: ExecutionResult[]
+    timeline?: Array<{ t: number; label: string; data?: any }>
+  }) => void
 }
 
-export function LiveExecutionPanel({ code, language, onBreakpointHit }: LiveExecutionPanelProps) {
+export function LiveExecutionPanel({ code, language, onBreakpointHit, onRunComplete }: LiveExecutionPanelProps) {
   const [isRunning, setIsRunning] = useState(false)
   const [autoRun, setAutoRun] = useState(false)
   const [results, setResults] = useState<ExecutionResult[]>([])
   const [executionTime, setExecutionTime] = useState<number>(0)
+  const [instrument, setInstrument] = useState<boolean>(true)
 
   const executeCode = useCallback(async () => {
-    if (language !== 'javascript' && language !== 'typescript') {
+    // Normalize language values produced by detectLanguage (e.g. 'JavaScript', 'TypeScript')
+    const normalized = language.toLowerCase()
+    const isSupported = normalized === 'javascript' || normalized === 'typescript' || normalized === 'javascript react' || normalized === 'typescript react'
+    if (!isSupported) {
       setResults([{
         type: 'warn',
-        content: `Live execution only supports JavaScript/TypeScript. Current language: ${language}`,
+        content: `Live execution only supports JavaScript / TypeScript. Current language: ${language}`,
         timestamp: Date.now()
       }])
       return
@@ -37,91 +46,60 @@ export function LiveExecutionPanel({ code, language, onBreakpointHit }: LiveExec
 
     setIsRunning(true)
     setResults([])
-    const startTime = performance.now()
 
-    const capturedLogs: ExecutionResult[] = []
-    
-    const sandboxConsole = {
-      log: (...args: any[]) => {
-        capturedLogs.push({
-          type: 'log',
-          content: args.map(arg => 
-            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-          ).join(' '),
-          timestamp: Date.now()
-        })
-      },
-      error: (...args: any[]) => {
-        capturedLogs.push({
+    // Spawn worker
+    const worker = new Worker(new URL('@/workers/executor.ts', import.meta.url), { type: 'module' })
+
+    const id = `${Date.now()}`
+    let settled = false
+
+    const timeout = setTimeout(() => {
+      if (!settled) {
+        settled = true
+        worker.terminate()
+        setExecutionTime(0)
+        setResults([{
           type: 'error',
-          content: args.map(arg => String(arg)).join(' '),
+          content: 'Execution timed out',
           timestamp: Date.now()
-        })
-      },
-      warn: (...args: any[]) => {
-        capturedLogs.push({
-          type: 'warn',
-          content: args.map(arg => String(arg)).join(' '),
-          timestamp: Date.now()
-        })
-      },
-      info: (...args: any[]) => {
-        capturedLogs.push({
-          type: 'info',
-          content: args.map(arg => String(arg)).join(' '),
-          timestamp: Date.now()
-        })
+        }])
+        setIsRunning(false)
       }
-    }
+    }, 3000)
 
-    try {
-      const wrappedCode = `
-        (async function() {
-          const console = arguments[0];
-          ${code}
-        })(sandboxConsole);
-      `
-      
-      const AsyncFunction = async function() {}.constructor as any
-      const executeFn = new AsyncFunction('sandboxConsole', wrappedCode)
-      
-      const result = await executeFn(sandboxConsole)
-      
-      if (result !== undefined) {
-        capturedLogs.push({
-          type: 'result',
-          content: `Return value: ${typeof result === 'object' ? JSON.stringify(result, null, 2) : String(result)}`,
-          timestamp: Date.now()
-        })
+    worker.onmessage = (e: MessageEvent<any>) => {
+      if (settled) return
+      settled = true
+      clearTimeout(timeout)
+      const { durationMs, logs, result, error, timeline } = e.data as {
+        durationMs: number; logs: any[]; result?: any; error?: string; timeline?: any[]
       }
-
-      const endTime = performance.now()
-      setExecutionTime(endTime - startTime)
-      
+      setExecutionTime(durationMs)
+      const mapped = logs.map(l => ({ ...l })) as ExecutionResult[]
+      if (typeof result !== 'undefined') {
+        mapped.push({ type: 'result', content: `Return value: ${typeof result === 'object' ? JSON.stringify(result, null, 2) : String(result)}`, timestamp: Date.now() })
+      }
       setResults([
-        {
-          type: 'info',
-          content: `✓ Execution completed in ${(endTime - startTime).toFixed(2)}ms`,
-          timestamp: Date.now()
-        },
-        ...capturedLogs
+        { type: 'info', content: `✓ Execution completed in ${durationMs.toFixed(2)}ms`, timestamp: Date.now() },
+        ...mapped
       ])
-    } catch (error: any) {
-      const endTime = performance.now()
-      setExecutionTime(endTime - startTime)
-      
-      setResults([
-        {
-          type: 'error',
-          content: `✗ ${error.message}`,
-          timestamp: Date.now()
-        },
-        ...capturedLogs
-      ])
-    } finally {
+      onRunComplete?.({ durationMs, logs: mapped, timeline })
       setIsRunning(false)
+      worker.terminate()
     }
-  }, [code, language])
+
+    worker.onerror = () => {
+      if (settled) return
+      settled = true
+      clearTimeout(timeout)
+      setExecutionTime(0)
+      setResults([{ type: 'error', content: 'Worker error during execution', timestamp: Date.now() }])
+      setIsRunning(false)
+      worker.terminate()
+    }
+
+    worker.postMessage({ id, code, language, instrument })
+  }, [code, language, instrument, onRunComplete])
 
   useEffect(() => {
     if (autoRun) {
@@ -210,6 +188,18 @@ export function LiveExecutionPanel({ code, language, onBreakpointHit }: LiveExec
           Auto
         </Button>
 
+        <Button
+          size="sm"
+          variant={instrument ? 'default' : 'outline'}
+          onClick={() => setInstrument(!instrument)}
+          className="h-8 gap-2"
+          aria-pressed={instrument}
+          aria-label="Toggle instrumentation"
+        >
+          <Lightning className="h-4 w-4" weight={instrument ? 'fill' : 'regular'} />
+          Instrument
+        </Button>
+
         <Separator orientation="vertical" className="h-6" />
 
         <Button
@@ -230,6 +220,7 @@ export function LiveExecutionPanel({ code, language, onBreakpointHit }: LiveExec
               <Play className="h-12 w-12 mx-auto mb-3 opacity-20" />
               <p>No output yet</p>
               <p className="text-xs mt-1">Run your code to see results</p>
+              <p className="text-[10px] mt-2 text-muted-foreground">Sandboxed execution with 3s timeout. Enable Instrument for basic runtime tracing via __trace().</p>
             </div>
           ) : (
             results.map((result, idx) => (

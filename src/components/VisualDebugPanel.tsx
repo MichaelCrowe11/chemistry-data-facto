@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
@@ -24,11 +24,13 @@ interface DebugState {
   line: number
   variables: Variable[]
   callStack: string[]
+  codeSnippet?: string
 }
 
 interface VisualDebugPanelProps {
   code: string
   currentLine?: number
+  timeline?: Array<{ t: number; label: string; data?: any }>
   onStepForward?: () => void
   onStepBack?: () => void
   onContinue?: () => void
@@ -37,6 +39,7 @@ interface VisualDebugPanelProps {
 export function VisualDebugPanel({ 
   code, 
   currentLine,
+  timeline,
   onStepForward,
   onStepBack,
   onContinue
@@ -45,18 +48,75 @@ export function VisualDebugPanel({
   const [debugStates, setDebugStates] = useState<DebugState[]>([])
   const [currentStateIndex, setCurrentStateIndex] = useState(0)
   const [breakpoints, setBreakpoints] = useState<Set<number>>(new Set())
+  const [mode, setMode] = useState<'runtime' | 'heuristic'>('heuristic')
 
   const currentState = debugStates[currentStateIndex]
 
+  const runtimeStates = useMemo<DebugState[]>(() => {
+    if (!timeline || timeline.length === 0) return []
+    return timeline
+      .filter(entry => entry.label === 'line' && entry.data && typeof entry.data.line === 'number')
+      .map(entry => ({
+        line: entry.data.line as number,
+        variables: Array.isArray(entry.data?.vars)
+          ? (entry.data.vars as Variable[])
+          : [],
+        callStack: [`runtime trace (line ${entry.data.line})`],
+        codeSnippet: entry.data?.code,
+      }))
+  }, [timeline])
+
+  const buildHeuristicStates = useCallback((): DebugState[] => {
+    const lines = code.split('\n')
+    const states: DebugState[] = []
+    const trackedVariables = new Map<string, any>()
+
+    lines.forEach((line, idx) => {
+      const trimmedLine = line.trim()
+      const varMatch = trimmedLine.match(/(?:const|let|var)\s+(\w+)\s*=\s*(.+)/)
+      if (varMatch) {
+        const [, varName, varValue] = varMatch
+        try {
+          const evaluatedValue = varValue.replace(/;$/, '')
+          trackedVariables.set(varName, evaluatedValue)
+        } catch (e) {
+          trackedVariables.set(varName, varValue)
+        }
+      }
+
+      if (trimmedLine && !trimmedLine.startsWith('//')) {
+        const variables: Variable[] = Array.from(trackedVariables.entries()).map(([name, value]) => ({
+          name,
+          value,
+          type: typeof value,
+        }))
+
+        states.push({
+          line: idx + 1,
+          variables,
+          callStack: [`main (line ${idx + 1})`],
+          codeSnippet: trimmedLine,
+        })
+      }
+    })
+
+    return states
+  }, [code])
+
   const startDebugging = () => {
+    const hasRuntime = runtimeStates.length > 0
+    const states = hasRuntime ? runtimeStates : buildHeuristicStates()
+    setDebugStates(states)
+    setCurrentStateIndex(0)
     setIsDebugging(true)
-    analyzeCodeExecution()
+    setMode(hasRuntime ? 'runtime' : 'heuristic')
   }
 
   const stopDebugging = () => {
     setIsDebugging(false)
     setDebugStates([])
     setCurrentStateIndex(0)
+    setMode('heuristic')
   }
 
   const stepForward = () => {
@@ -84,44 +144,6 @@ export function VisualDebugPanel({
       setCurrentStateIndex(debugStates.length - 1)
     }
     onContinue?.()
-  }
-
-  const analyzeCodeExecution = () => {
-    const lines = code.split('\n')
-    const states: DebugState[] = []
-    const trackedVariables = new Map<string, any>()
-
-    lines.forEach((line, idx) => {
-      const trimmedLine = line.trim()
-      
-      const varMatch = trimmedLine.match(/(?:const|let|var)\s+(\w+)\s*=\s*(.+)/)
-      if (varMatch) {
-        const [, varName, varValue] = varMatch
-        try {
-          const evaluatedValue = varValue.replace(/;$/, '')
-          trackedVariables.set(varName, evaluatedValue)
-        } catch (e) {
-          trackedVariables.set(varName, varValue)
-        }
-      }
-
-      if (trimmedLine && !trimmedLine.startsWith('//')) {
-        const variables: Variable[] = Array.from(trackedVariables.entries()).map(([name, value]) => ({
-          name,
-          value,
-          type: typeof value
-        }))
-
-        states.push({
-          line: idx + 1,
-          variables,
-          callStack: [`main (line ${idx + 1})`]
-        })
-      }
-    })
-
-    setDebugStates(states)
-    setCurrentStateIndex(0)
   }
 
   const toggleBreakpoint = (line: number) => {
@@ -171,6 +193,9 @@ export function VisualDebugPanel({
               Active
             </Badge>
           )}
+          <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+            {mode === 'runtime' ? 'Runtime Trace' : 'Heuristic'}
+          </Badge>
         </div>
         {currentState && (
           <Badge variant="secondary" className="text-xs">
@@ -185,6 +210,7 @@ export function VisualDebugPanel({
             size="sm"
             onClick={startDebugging}
             className="h-8 gap-2"
+            aria-label="Start debugging"
           >
             <Play className="h-4 w-4" weight="fill" />
             Start Debugging
@@ -197,6 +223,7 @@ export function VisualDebugPanel({
               onClick={stepBackward}
               disabled={currentStateIndex === 0}
               className="h-8"
+              aria-label="Step backward"
             >
               <ArrowLeft className="h-4 w-4" weight="bold" />
             </Button>
@@ -207,6 +234,7 @@ export function VisualDebugPanel({
               onClick={stepForward}
               disabled={currentStateIndex === debugStates.length - 1}
               className="h-8"
+              aria-label="Step forward"
             >
               <ArrowRight className="h-4 w-4" weight="bold" />
             </Button>
@@ -216,6 +244,7 @@ export function VisualDebugPanel({
               variant="outline"
               onClick={continueExecution}
               className="h-8 gap-2"
+              aria-label="Continue to next breakpoint"
             >
               <SkipForward className="h-4 w-4" weight="fill" />
               Continue
@@ -228,6 +257,7 @@ export function VisualDebugPanel({
               variant="ghost"
               onClick={stopDebugging}
               className="h-8"
+              aria-label="Stop debugging"
             >
               Stop
             </Button>
@@ -240,7 +270,11 @@ export function VisualDebugPanel({
           <div className="p-4 text-center text-muted-foreground">
             <Bug className="h-12 w-12 mx-auto mb-3 opacity-20" />
             <p className="font-medium">Debugger Ready</p>
-            <p className="text-xs mt-1">Start debugging to inspect variables</p>
+            <p className="text-xs mt-1">
+              {runtimeStates.length > 0
+                ? 'Runtime trace available from last instrumentation run. Start debugging to replay it.'
+                : 'No runtime trace captured yet. Run instrumented execution to enable richer debugging.'}
+            </p>
           </div>
         ) : (
           <div className="p-4 space-y-4">
@@ -249,7 +283,11 @@ export function VisualDebugPanel({
                 Variables
               </h3>
               {currentState?.variables.length === 0 ? (
-                <div className="text-xs text-muted-foreground italic">No variables in scope</div>
+                <div className="text-xs text-muted-foreground italic">
+                  {mode === 'runtime'
+                    ? 'No variable snapshot captured for this trace event.'
+                    : 'No variables in scope'}
+                </div>
               ) : (
                 <div className="space-y-2">
                   {currentState?.variables.map((variable, idx) => (
@@ -318,6 +356,9 @@ export function VisualDebugPanel({
                     <span className="text-muted-foreground">
                       ({state.variables.length} var{state.variables.length !== 1 ? 's' : ''})
                     </span>
+                    {state.codeSnippet && (
+                      <span className="text-muted-foreground truncate">— {state.codeSnippet}</span>
+                    )}
                   </div>
                 ))}
               </div>

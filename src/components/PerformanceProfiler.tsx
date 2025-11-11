@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { useState, useEffect, useCallback } from 'react'
+ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Speedometer, Lightning, Flame, Target } from '@phosphor-icons/react'
@@ -12,24 +12,27 @@ interface PerformanceMetric {
   percentage: number
 }
 
+interface TimelineEntry {
+  t: number
+  label: string
+  data?: any
+}
+
 interface PerformanceProfilerProps {
   code: string
   isRunning: boolean
   onOptimize?: (line: number) => void
+  runtimeDurationMs?: number
+  timeline?: TimelineEntry[]
 }
 
-export function PerformanceProfiler({ code, isRunning, onOptimize }: PerformanceProfilerProps) {
+export function PerformanceProfiler({ code, isRunning, onOptimize, runtimeDurationMs, timeline }: PerformanceProfilerProps) {
   const [metrics, setMetrics] = useState<PerformanceMetric[]>([])
   const [totalTime, setTotalTime] = useState(0)
   const [selectedLine, setSelectedLine] = useState<number | null>(null)
+  const [runtimeBased, setRuntimeBased] = useState(false)
 
-  useEffect(() => {
-    if (isRunning) {
-      profileCode()
-    }
-  }, [isRunning])
-
-  const profileCode = () => {
+  const profileCode = useCallback(() => {
     const lines = code.split('\n')
     const newMetrics: PerformanceMetric[] = []
     let total = 0
@@ -52,7 +55,57 @@ export function PerformanceProfiler({ code, isRunning, onOptimize }: Performance
 
     setMetrics(newMetrics.sort((a, b) => b.executionTime - a.executionTime))
     setTotalTime(total)
-  }
+    setRuntimeBased(false)
+  }, [code])
+
+  const computeRuntimeMetrics = useCallback(() => {
+    if (!timeline || timeline.length === 0) return
+    const hits = new Map<number, number>()
+
+    timeline.forEach(entry => {
+      if (entry.label === 'line' && entry.data && typeof entry.data.line === 'number') {
+        const line = entry.data.line as number
+        hits.set(line, (hits.get(line) ?? 0) + 1)
+      }
+    })
+
+    if (hits.size === 0) return
+
+    const totalHits = Array.from(hits.values()).reduce((acc, value) => acc + value, 0)
+    const duration = typeof runtimeDurationMs === 'number' ? runtimeDurationMs : totalHits
+
+    const derivedMetrics: PerformanceMetric[] = Array.from(hits.entries()).map(([line, count]) => {
+      const share = totalHits === 0 ? 0 : count / totalHits
+      return {
+        line,
+        executionTime: duration * share,
+        percentage: share * 100,
+      }
+    })
+
+    setMetrics(derivedMetrics.sort((a, b) => b.percentage - a.percentage))
+    setTotalTime(duration)
+    setRuntimeBased(true)
+  }, [timeline, runtimeDurationMs])
+
+  useEffect(() => {
+    if (!timeline || timeline.length === 0) {
+      profileCode()
+    }
+  }, [timeline, profileCode])
+
+  useEffect(() => {
+    // If we have an actual runtime duration from the sandbox, reflect it in the header
+    if (typeof runtimeDurationMs === 'number') {
+      setTotalTime(runtimeDurationMs)
+    }
+  }, [runtimeDurationMs])
+
+  useEffect(() => {
+    if (timeline && timeline.length > 0) {
+      computeRuntimeMetrics()
+    }
+  }, [timeline, computeRuntimeMetrics])
 
   const getHeatMapColor = (percentage: number): string => {
     if (percentage < 5) return 'bg-green-500/20 border-green-500/40'
@@ -92,6 +145,9 @@ export function PerformanceProfiler({ code, isRunning, onOptimize }: Performance
               <span className="text-xs text-orange-400">Profiling...</span>
             </div>
           )}
+          <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+            {runtimeBased ? 'Runtime Trace' : 'Simulated'}
+          </Badge>
         </div>
         {totalTime > 0 && (
           <Badge variant="secondary" className="text-xs">
@@ -118,8 +174,12 @@ export function PerformanceProfiler({ code, isRunning, onOptimize }: Performance
         {metrics.length === 0 ? (
           <div className="p-4 text-center text-muted-foreground">
             <Speedometer className="h-12 w-12 mx-auto mb-3 opacity-20" />
-            <p className="font-medium">No Profile Data</p>
-            <p className="text-xs mt-1">Run your code to see performance metrics</p>
+            <p className="font-medium">No Hot Spots Available</p>
+            <p className="text-xs mt-1">
+              Runtime: {totalTime > 0 ? `${totalTime.toFixed(2)}ms` : '—'} • {runtimeBased
+                ? 'Runtime trace did not capture line-level data.'
+                : 'Enable instrumentation to replace simulated metrics with real execution traces.'}
+            </p>
           </div>
         ) : (
           <div className="p-4 space-y-2">
