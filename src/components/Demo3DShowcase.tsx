@@ -15,7 +15,7 @@ export function Demo3DShowcase() {
 
   // Generate sample data for visualization
   const generateSampleData = () => {
-    const data = [];
+    const data: Array<{ x: number; y: number; z: number; value: number; label: string }> = [];
     for (let i = 0; i < 50; i++) {
       data.push({
         x: Math.random(),

@@ -50,12 +50,16 @@ export function Performance3DSettings({
 
   // Monitor FPS
   useEffect(() => {
+    if (typeof window === 'undefined' || !window.performance || typeof window.performance.now !== 'function') {
+      return;
+    }
+
     let frameCount = 0;
-    let lastTime = performance.now();
+    let lastTime = window.performance.now();
 
     const measureFPS = () => {
       frameCount++;
-      const currentTime = performance.now();
+      const currentTime = window.performance.now();
 
       if (currentTime >= lastTime + 1000) {
         setFps(Math.round((frameCount * 1000) / (currentTime - lastTime)));

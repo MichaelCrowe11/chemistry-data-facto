@@ -4,7 +4,7 @@
  */
 
 import React, { Component, ErrorInfo, ReactNode } from 'react'
-import { AlertTriangle, RefreshCw, Home, Bug } from '@phosphor-icons/react'
+import { Warning, ArrowClockwise, House, Bug } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 
@@ -149,7 +149,7 @@ ${errorInfo?.componentStack || 'No component stack'}
             {/* Error icon */}
             <div className="flex justify-center">
               <div className="p-4 rounded-full bg-destructive/10">
-                <AlertTriangle size={48} weight="duotone" className="text-destructive" />
+                <Warning size={48} weight="duotone" className="text-destructive" />
               </div>
             </div>
 
@@ -207,7 +207,7 @@ ${errorInfo?.componentStack || 'No component stack'}
                   variant="default"
                   className="flex-1 gap-2"
                 >
-                  <RefreshCw size={16} />
+                  <ArrowClockwise size={16} />
                   Try Again
                 </Button>
               )}
@@ -218,7 +218,7 @@ ${errorInfo?.componentStack || 'No component stack'}
                   variant="outline"
                   className="flex-1 gap-2"
                 >
-                  <RefreshCw size={16} />
+                  <ArrowClockwise size={16} />
                   Reload Page
                 </Button>
               ) : (
@@ -227,7 +227,7 @@ ${errorInfo?.componentStack || 'No component stack'}
                   variant="outline"
                   className="flex-1 gap-2"
                 >
-                  <Home size={16} />
+                  <House size={16} />
                   Go Home
                 </Button>
               )}
@@ -271,7 +271,7 @@ export function ComponentErrorBoundary({
       fallback={
         <div className="p-4 rounded-lg border border-destructive/20 bg-destructive/5">
           <div className="flex items-center gap-2 text-destructive">
-            <AlertTriangle size={20} weight="duotone" />
+            <Warning size={20} weight="duotone" />
             <span className="font-medium">Error in {componentName}</span>
           </div>
           <p className="mt-2 text-sm text-muted-foreground">
