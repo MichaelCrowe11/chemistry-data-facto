@@ -31,7 +31,7 @@ import { ResearchPaperPanel } from '@/components/ResearchPaperPanel'
 import { ExperimentTrackingPanel } from '@/components/ExperimentTrackingPanel'
 import { ReproducibilityEngine } from '@/components/ReproducibilityEngine'
 import { detectLanguage, generateId } from '@/lib/editor-utils'
-import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask, Package, Gear, ImageSquare, Eye, MapPin, Desktop, Microphone, Question } from '@phosphor-icons/react'
+import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask, Package, Gear, ImageSquare, Eye, MapPin, Desktop, Microphone, Question, Video } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
@@ -48,6 +48,7 @@ import { VRWorkspace } from '@/components/VRWorkspace'
 import { VoiceCodingPanel } from '@/components/VoiceCodingPanel'
 import { OnboardingTour } from '@/components/OnboardingTour'
 import { QuickStartTips } from '@/components/QuickStartTips'
+import { VideoTutorialPanel } from '@/components/VideoTutorialPanel'
 
 function App() {
   const [userId, setUserId] = useState<string>('')
@@ -59,7 +60,7 @@ function App() {
   const [sidebarVisible, setSidebarVisible] = useState(true)
   const [aiChatVisible, setAiChatVisible] = useState(false)
   const [selectedCode, setSelectedCode] = useState('')
-  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | 'reproducibility' | 'gallery3d' | 'voice' | null>('papers')
+  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | 'reproducibility' | 'gallery3d' | 'voice' | 'tutorials' | null>('papers')
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [performanceConfig, setPerformanceConfig] = useState<Performance3DConfig | null>(null)
   const [vrMode, setVrMode] = useState<'code' | 'workspace' | null>(null)
@@ -344,6 +345,17 @@ function App() {
             aria-label="Show Tutorial"
           >
             <Question className="h-5 w-5" />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => setRightPanel(rightPanel === 'tutorials' ? null : 'tutorials')}
+            className="h-8 w-8 bg-gradient-to-r from-purple-500/20 to-pink-500/20"
+            title="Video Tutorials"
+            aria-label="Video Tutorials"
+            data-tour="tutorials"
+          >
+            <Video className="h-5 w-5 text-purple-400" weight={rightPanel === 'tutorials' ? 'fill' : 'duotone'} />
           </Button>
           <div className="text-xs text-muted-foreground hidden sm:block">
             v9.0.0 VR/AR Edition
@@ -810,6 +822,64 @@ function App() {
                     }
                   }}
                   language={activeTab?.language}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'tutorials' && (
+              <div className="w-96 shrink-0">
+                <VideoTutorialPanel
+                  onClose={() => setRightPanel(null)}
+                  onStartFeature={(featureId) => {
+                    switch (featureId) {
+                      case 'vr-workspace':
+                        setVrMode('workspace')
+                        break
+                      case 'vr-code':
+                        setVrMode('code')
+                        break
+                      case 'ar':
+                        setArMode(true)
+                        break
+                      case 'voice':
+                        setRightPanel('voice')
+                        break
+                      case 'pair':
+                        setRightPanel('pair')
+                        break
+                      case 'sentient':
+                        setRightPanel('sentient')
+                        break
+                      case 'papers':
+                        setRightPanel('papers')
+                        break
+                      case 'experiments':
+                        setRightPanel('experiments')
+                        break
+                      case 'reproducibility':
+                        setRightPanel('reproducibility')
+                        break
+                      case 'gallery3d':
+                        setRightPanel('gallery3d')
+                        break
+                      case 'holographic':
+                        setRightPanel('holographic')
+                        break
+                      case 'execution':
+                        setRightPanel('execution')
+                        break
+                      case 'open-file':
+                        if (safeFiles.length > 0) {
+                          handleFileSelect(safeFiles[0].id)
+                        } else {
+                          toast.info('Create a file first')
+                        }
+                        break
+                      default:
+                        break
+                    }
+                    toast.success('Feature activated! Follow the tutorial steps.')
+                  }}
                 />
               </div>
             )}
