@@ -95,6 +95,17 @@ interface OnboardingTourProps {
   userId: string
 }
 
+/**
+ * Renders an interactive multi-step onboarding tour for a given user.
+ *
+ * The tour auto-opens for users who have not completed it, highlights DOM targets for each step,
+ * persists completion per user, and exposes a global restart hook on `window.restartOnboardingTour`.
+ *
+ * @param userId - The user's unique identifier used to persist and scope the tour completion state
+ * @returns The tour dialog JSX when the tour is open, or `null` when closed
+ *
+ * @public
+ */
 export function OnboardingTour({ userId }: OnboardingTourProps) {
   const [tourCompleted, setTourCompleted] = useKV<boolean>(
     `crowe-onboarding-completed-${userId}`,
@@ -314,7 +325,10 @@ export function OnboardingTour({ userId }: OnboardingTourProps) {
 }
 
 /**
- * Badge component to indicate tour availability
+ * Renders a compact badge button that opens the onboarding tour.
+ *
+ * @param onClick - Optional callback invoked when the badge is clicked (in addition to triggering the tour).
+ * @returns The badge button element
  */
 export function OnboardingBadge({ onClick }: { onClick?: () => void }) {
   return (
