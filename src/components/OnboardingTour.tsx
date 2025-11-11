@@ -23,7 +23,9 @@ import {
   FileCode,
   Atom,
   ImageSquare,
-  Keyboard
+  Keyboard,
+  Lightning,
+  ChartLineUp
 } from '@phosphor-icons/react'
 
 interface OnboardingStep {
@@ -153,6 +155,22 @@ const steps: OnboardingStep[] = [
     action: 'Execute code live',
   },
   {
+    id: 'asset-compressor',
+    title: 'Asset Compressor & Optimizer',
+    description: 'Compress and optimize images, videos, and other assets with AI-powered recommendations. Reduce file sizes while maintaining quality.',
+    icon: <Lightning className="h-8 w-8 text-purple-400" weight="duotone" />,
+    target: 'compressor-button',
+    action: 'Compress and optimize assets',
+  },
+  {
+    id: 'optimization-dashboard',
+    title: 'Optimization Dashboard',
+    description: 'Get insights and analytics on asset optimization opportunities. Track potential savings and view AI-powered recommendations for maximum efficiency.',
+    icon: <ChartLineUp className="h-8 w-8 text-green-400" weight="duotone" />,
+    target: 'optimization-button',
+    action: 'View optimization insights',
+  },
+  {
     id: 'shortcuts',
     title: 'Keyboard Shortcuts',
     description: 'Master these shortcuts to code faster: Cmd/Ctrl+K for AI, Cmd/Ctrl+S to save, Cmd/Ctrl+N for new file.',
@@ -197,6 +215,8 @@ export function OnboardingTour({ onComplete }: OnboardingTourProps) {
         'voice-button': '[data-tour="voice"]',
         'pair-button': '[data-tour="pair"]',
         'execution-button': '[data-tour="execution"]',
+        'compressor-button': '[data-tour="compressor"]',
+        'optimization-button': '[data-tour="optimization"]',
       }
 
       const selector = targetMap[currentStepData.target]

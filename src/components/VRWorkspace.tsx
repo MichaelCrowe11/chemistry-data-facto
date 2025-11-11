@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Cube, X, Desktop, Eye, Info } from '@phosphor-icons/react'
 import { toast } from 'sonner'
-import '@/types/webxr'
+import '@/types/webxr.d.ts'
 import { FileItem } from '@/types/editor'
 
 interface VRWorkspaceProps {

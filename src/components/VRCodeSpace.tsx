@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Cube, X, ArrowsOut, Eye } from '@phosphor-icons/react'
 import { toast } from 'sonner'
-import '@/types/webxr'
+import '@/types/webxr.d.ts'
 
 interface VRCodeSpaceProps {
   code: string
