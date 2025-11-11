@@ -1,8 +1,45 @@
-# 🚀 Crowe Code - Quantum AI IDE
+# 🚀 Crowe Code - VR/AR Research IDE
 
-> **The world's first sentient, quantum-powered code editor**
+> **The world's first immersive VR/AR code editor with research-focused AI**
 
-Crowe Code transcends traditional IDEs by combining cutting-edge AI with revolutionary features that have never been seen before. Write code by describing intent, visualize architecture in 3D space, analyze patterns at a genetic level, and debug with AI that understands what you *meant* to do.
+Crowe Code revolutionizes software development by combining Virtual Reality, Augmented Reality, and cutting-edge AI features. Code in fully immersive 3D environments, place your code in physical space, search academic papers, track experiments, and experience development like never before.
+
+## 🥽 VR/AR Immersive Features
+
+### 🌐 VR Code Space
+Experience your code in a fully immersive virtual reality environment with floating 3D code panels and interactive visualizations.
+
+- **3D Code Visualization**: Each line rendered as an interactive 3D object
+- **VR Controller Support**: Natural interaction with VR controllers
+- **Hand Tracking**: Optional hand tracking for gesture-based navigation
+- **Animated Environment**: Gentle animations and spatial lighting
+- **Multi-File Display**: View multiple code files simultaneously in 3D
+
+### 📍 AR Code Overlay
+Place your code in the real world using augmented reality for a unique debugging and review experience.
+
+- **Real-World Placement**: Anchor code snippets to physical surfaces
+- **Surface Detection**: Automatic flat surface recognition
+- **Multi-Placement**: Place multiple files around your workspace
+- **Interactive Tap Placement**: Simple tap-to-place interaction
+- **Persistent Positioning**: Code stays anchored in physical space
+
+### 🖥️ VR Workspace
+Complete virtual development environment with spatial file navigation and immersive code editing.
+
+- **360° Workspace**: Full virtual workspace with file tree and code editor
+- **Spatial File Navigation**: 3D file explorer in virtual space
+- **Room-Scale Support**: Move around to view different panels
+- **Multi-Panel Layout**: Ergonomically arranged virtual panels
+- **Ambient Environment**: Immersive lighting and visual effects
+
+**Compatible Devices:**
+- Meta Quest 2/3/Pro
+- HTC Vive/Vive Pro
+- Valve Index
+- ARCore/ARKit enabled smartphones
+
+📖 **[Full VR/AR Documentation](VR_AR_FEATURES.md)**
 
 # 🚀 Crowe Code - Research IDE
 

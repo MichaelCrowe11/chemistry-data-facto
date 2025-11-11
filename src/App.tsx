@@ -31,7 +31,7 @@ import { ResearchPaperPanel } from '@/components/ResearchPaperPanel'
 import { ExperimentTrackingPanel } from '@/components/ExperimentTrackingPanel'
 import { ReproducibilityEngine } from '@/components/ReproducibilityEngine'
 import { detectLanguage, generateId } from '@/lib/editor-utils'
-import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask, Package, Gear, ImageSquare } from '@phosphor-icons/react'
+import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask, Package, Gear, ImageSquare, Eye, MapPin, Desktop } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
@@ -42,6 +42,9 @@ import { Enhanced3DWelcome } from '@/components/Enhanced3DWelcome'
 import { Performance3DSettings, Performance3DConfig } from '@/components/Performance3DSettings'
 import { initializePerformanceConfig } from '@/lib/device-detection'
 import { Gallery3D } from '@/components/3DGallery'
+import { VRCodeSpace } from '@/components/VRCodeSpace'
+import { ARCodeOverlay } from '@/components/ARCodeOverlay'
+import { VRWorkspace } from '@/components/VRWorkspace'
 
 function App() {
   const [userId, setUserId] = useState<string>('')
@@ -56,6 +59,8 @@ function App() {
   const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | 'reproducibility' | 'gallery3d' | null>('papers')
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [performanceConfig, setPerformanceConfig] = useState<Performance3DConfig | null>(null)
+  const [vrMode, setVrMode] = useState<'code' | 'workspace' | null>(null)
+  const [arMode, setArMode] = useState(false)
 
   // Auto-detect device capabilities and set performance config on mount
   useEffect(() => {
@@ -253,9 +258,43 @@ function App() {
             {sidebarVisible ? <Sidebar className="h-5 w-5" /> : <List className="h-5 w-5" />}
           </Button>
           <h1 className="text-sm font-semibold text-slate-50 border-cyan-300 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">Crowe Code</h1>
-          <Badge variant="default" className="text-xs bg-gradient-to-r from-blue-500 to-cyan-500 border-0 shadow-lg shadow-blue-500/30">Research Edition</Badge>
+          <Badge variant="default" className="text-xs bg-gradient-to-r from-purple-500 to-pink-500 border-0 shadow-lg shadow-purple-500/30">VR/AR Edition</Badge>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => setVrMode('workspace')}
+            className="h-8 w-8 bg-gradient-to-r from-purple-500/20 to-pink-500/20"
+            title="VR Workspace"
+            aria-label="VR Workspace"
+          >
+            <Desktop className="h-5 w-5 text-purple-400" weight="duotone" />
+          </Button>
+          {activeTab && (
+            <>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setVrMode('code')}
+                className="h-8 w-8 bg-gradient-to-r from-blue-500/20 to-cyan-500/20"
+                title="VR Code View"
+                aria-label="VR Code View"
+              >
+                <Eye className="h-5 w-5 text-blue-400" weight="duotone" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setArMode(true)}
+                className="h-8 w-8 bg-gradient-to-r from-green-500/20 to-emerald-500/20"
+                title="AR Code Overlay"
+                aria-label="AR Code Overlay"
+              >
+                <MapPin className="h-5 w-5 text-green-400" weight="duotone" />
+              </Button>
+            </>
+          )}
           <Button
             size="icon"
             variant="ghost"
@@ -277,7 +316,7 @@ function App() {
             <Gear className="h-5 w-5" />
           </Button>
           <div className="text-xs text-muted-foreground hidden sm:block">
-            v8.0.0 3D Immersive Edition
+            v9.0.0 VR/AR Edition
           </div>
           {userId && (
             <>
@@ -708,6 +747,43 @@ function App() {
         </div>
       </div>
       <StatusBar activeTab={activeTab} />
+
+      {vrMode === 'code' && activeTab && (
+        <VRCodeSpace
+          code={activeTab.content}
+          language={activeTab.language}
+          onClose={() => setVrMode(null)}
+          onCodeChange={(code) => {
+            handleContentChange(code)
+          }}
+        />
+      )}
+
+      {vrMode === 'workspace' && (
+        <VRWorkspace
+          files={safeFiles}
+          activeFile={
+            activeTab
+              ? {
+                  name: activeTab.fileName,
+                  content: activeTab.content,
+                  language: activeTab.language,
+                }
+              : null
+          }
+          onClose={() => setVrMode(null)}
+          onFileSelect={handleFileSelect}
+        />
+      )}
+
+      {arMode && activeTab && (
+        <ARCodeOverlay
+          code={activeTab.content}
+          language={activeTab.language}
+          fileName={activeTab.fileName}
+          onClose={() => setArMode(false)}
+        />
+      )}
     </div>
   );
 }
