@@ -292,9 +292,11 @@ export function ComponentErrorBoundary({
 }
 
 /**
- * Returns a setter that triggers the nearest ErrorBoundary by throwing the provided `Error`.
+ * Returns a React state setter that, when called with an `Error`, will cause that error to be thrown in the next render,
+ * triggering the nearest ErrorBoundary. This works by storing the error in state and throwing it in a `useEffect`.
  *
- * @returns A function that accepts an `Error`; calling it causes that `Error` to be thrown so an enclosing ErrorBoundary can catch it.
+ * @returns A React state setter; calling it with an `Error` will cause that error to be thrown in the next render cycle,
+ *          so an enclosing ErrorBoundary can catch it.
  */
 export function useErrorHandler() {
   const [error, setError] = React.useState<Error | null>(null)
