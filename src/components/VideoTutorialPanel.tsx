@@ -27,7 +27,8 @@ import {
   CheckCircle,
   BookOpen,
   Trophy,
-  Target
+  Target,
+  Shield
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 
@@ -70,6 +71,24 @@ interface VideoTutorialPanelProps {
 }
 
 const tutorials: Tutorial[] = [
+  {
+    id: 'data-protection',
+    title: 'Data Protection & Backups',
+    description: 'Learn how to protect your work with automated backups, data validation, and secure export/import.',
+    duration: '3:30',
+    category: 'basics',
+    difficulty: 'beginner',
+    videoUrl: 'data-protection-demo',
+    icon: Shield,
+    tags: ['Security', 'Backup', 'Data', 'Protection'],
+    steps: [
+      { timestamp: 0, title: 'Open Protection Panel', description: 'Click the Shield icon in toolbar', action: 'dataprotection' },
+      { timestamp: 30, title: 'Create Backup', description: 'Click "Create Backup Now" to save current state' },
+      { timestamp: 90, title: 'Export Data', description: 'Download your entire workspace as JSON' },
+      { timestamp: 150, title: 'Validate Integrity', description: 'Check data integrity with SHA-256 validation' },
+      { timestamp: 210, title: 'Restore Backup', description: 'Rollback to any previous backup point' }
+    ]
+  },
   {
     id: 'javascript-basics',
     title: 'JavaScript Coding Basics',

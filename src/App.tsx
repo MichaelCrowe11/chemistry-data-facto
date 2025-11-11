@@ -31,7 +31,7 @@ import { ResearchPaperPanel } from '@/components/ResearchPaperPanel'
 import { ExperimentTrackingPanel } from '@/components/ExperimentTrackingPanel'
 import { ReproducibilityEngine } from '@/components/ReproducibilityEngine'
 import { detectLanguage, generateId } from '@/lib/editor-utils'
-import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask, Package, Gear, ImageSquare, Eye, MapPin, Desktop, Microphone, Question, Video, Target } from '@phosphor-icons/react'
+import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask, Package, Gear, ImageSquare, Eye, MapPin, Desktop, Microphone, Question, Video, Target, Shield } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
@@ -50,6 +50,7 @@ import { OnboardingTour } from '@/components/OnboardingTour'
 import { QuickStartTips } from '@/components/QuickStartTips'
 import { VideoTutorialPanel } from '@/components/VideoTutorialPanel'
 import { CodeChallengesPanel } from '@/components/CodeChallengesPanel'
+import { DataProtectionPanel } from '@/components/DataProtectionPanel'
 
 function App() {
   const [userId, setUserId] = useState<string>('')
@@ -61,7 +62,7 @@ function App() {
   const [sidebarVisible, setSidebarVisible] = useState(true)
   const [aiChatVisible, setAiChatVisible] = useState(false)
   const [selectedCode, setSelectedCode] = useState('')
-  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | 'reproducibility' | 'gallery3d' | 'voice' | 'tutorials' | 'challenges' | null>('papers')
+  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | 'reproducibility' | 'gallery3d' | 'voice' | 'tutorials' | 'challenges' | 'dataprotection' | null>('papers')
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [performanceConfig, setPerformanceConfig] = useState<Performance3DConfig | null>(null)
   const [vrMode, setVrMode] = useState<'code' | 'workspace' | null>(null)
@@ -368,6 +369,17 @@ function App() {
             data-tour="challenges"
           >
             <Target className="h-5 w-5 text-cyan-400" weight={rightPanel === 'challenges' ? 'fill' : 'duotone'} />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => setRightPanel(rightPanel === 'dataprotection' ? null : 'dataprotection')}
+            className="h-8 w-8 bg-gradient-to-r from-green-500/20 to-emerald-500/20"
+            title="Data Protection & Backups"
+            aria-label="Data Protection"
+            data-tour="dataprotection"
+          >
+            <Shield className="h-5 w-5 text-green-400" weight={rightPanel === 'dataprotection' ? 'fill' : 'duotone'} />
           </Button>
           <div className="text-xs text-muted-foreground hidden sm:block">
             v9.0.0 VR/AR Edition
@@ -914,6 +926,15 @@ function App() {
                       }
                     }
                   }}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'dataprotection' && userId && (
+              <div className="w-96 shrink-0">
+                <DataProtectionPanel
+                  userId={userId}
+                  onClose={() => setRightPanel(null)}
                 />
               </div>
             )}
