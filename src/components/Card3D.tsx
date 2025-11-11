@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import * as THREE from 'three';
 
 interface Card3DProps {
@@ -27,6 +26,7 @@ export function Card3D({
   const cardRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mousePos = useRef({ x: 0, y: 0 });
+  const [transform, setTransform] = useState({ rotateY: 0, rotateX: 0, scale: 1 });
 
   // Intensity settings
   const intensitySettings = {
@@ -36,6 +36,18 @@ export function Card3D({
   };
 
   const settings = intensitySettings[intensity];
+
+  useEffect(() => {
+    if (!isHovered) {
+      setTransform({ rotateY: 0, rotateX: 0, scale: 1 });
+    } else {
+      setTransform({
+        rotateY: mousePos.current.x * settings.tilt,
+        rotateX: -mousePos.current.y * settings.tilt,
+        scale: settings.scale
+      });
+    }
+  }, [isHovered, settings.tilt, settings.scale]);
 
   // Canvas particle effect
   useEffect(() => {
@@ -140,30 +152,28 @@ export function Card3D({
       x: (x / rect.width - 0.5) * 2,
       y: (y / rect.height - 0.5) * 2
     };
+
+    if (isHovered) {
+      setTransform({
+        rotateY: mousePos.current.x * settings.tilt,
+        rotateX: -mousePos.current.y * settings.tilt,
+        scale: settings.scale
+      });
+    }
   };
 
   return (
-    <motion.div
+    <div
       ref={cardRef}
-      className={`relative ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+      className={`relative transition-all duration-300 ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
       onMouseEnter={() => !disabled && setIsHovered(true)}
       onMouseLeave={() => !disabled && setIsHovered(false)}
       onMouseMove={handleMouseMove}
       onClick={() => !disabled && onClick?.()}
-      animate={{
-        rotateY: isHovered ? mousePos.current.x * settings.tilt : 0,
-        rotateX: isHovered ? -mousePos.current.y * settings.tilt : 0,
-        scale: isHovered ? settings.scale : 1,
-        z: isHovered ? 50 : 0
-      }}
-      transition={{
-        type: 'spring',
-        stiffness: 300,
-        damping: 20
-      }}
       style={{
         transformStyle: 'preserve-3d',
-        perspective: 1000
+        perspective: 1000,
+        transform: `rotateY(${transform.rotateY}deg) rotateX(${transform.rotateX}deg) scale(${transform.scale}) translateZ(${isHovered ? 50 : 0}px)`
       }}
     >
       {/* Particle canvas */}
@@ -177,24 +187,21 @@ export function Card3D({
 
       {/* Glow border */}
       {isHovered && (
-        <motion.div
-          className="absolute inset-0 rounded-lg border-2 pointer-events-none"
+        <div
+          className="absolute inset-0 rounded-lg border-2 pointer-events-none transition-opacity duration-300"
           style={{
             borderColor: glowColor,
-            boxShadow: `0 0 20px ${glowColor}80, inset 0 0 20px ${glowColor}40`
+            boxShadow: `0 0 20px ${glowColor}80, inset 0 0 20px ${glowColor}40`,
+            opacity: 1
           }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
         />
       )}
 
       {/* Shine effect */}
       {isHovered && (
-        <motion.div
-          className="absolute inset-0 rounded-lg pointer-events-none overflow-hidden"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.3 }}
+        <div
+          className="absolute inset-0 rounded-lg pointer-events-none overflow-hidden transition-opacity duration-300"
+          style={{ opacity: 0.3 }}
         >
           <div
             className="absolute w-full h-full"
@@ -203,12 +210,12 @@ export function Card3D({
               transform: `translateX(${mousePos.current.x * 50}px) translateY(${mousePos.current.y * 50}px)`
             }}
           />
-        </motion.div>
+        </div>
       )}
 
       {/* Content */}
       <div className="relative z-10">{children}</div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -233,6 +240,7 @@ export function Button3D({
   disabled = false
 }: Button3DProps) {
   const [isPressed, setIsPressed] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const variantStyles = {
     primary: 'bg-gradient-to-br from-cyan-500 via-purple-500 to-pink-500 text-white',
@@ -246,46 +254,43 @@ export function Button3D({
     lg: 'px-6 py-3 text-lg'
   };
 
+  const getBoxShadow = () => {
+    if (isPressed || disabled) return 'none';
+    if (variant === 'primary') {
+      return isHovered ? '0 10px 30px -5px rgba(139, 92, 246, 0.5)' : '0 5px 15px -3px rgba(139, 92, 246, 0.3)';
+    }
+    return isHovered ? '0 5px 15px -3px rgba(0, 0, 0, 0.3)' : 'none';
+  };
+
   return (
-    <motion.button
-      className={`rounded-lg font-medium ${variantStyles[variant]} ${sizeStyles[size]} ${className} ${
+    <button
+      className={`rounded-lg font-medium transition-all duration-200 ${variantStyles[variant]} ${sizeStyles[size]} ${className} ${
         disabled ? 'opacity-50 cursor-not-allowed' : ''
       }`}
       onClick={onClick}
       disabled={disabled}
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
-      onMouseLeave={() => setIsPressed(false)}
-      whileHover={{
-        scale: disabled ? 1 : 1.05,
-        rotateX: disabled ? 0 : 5,
-        z: disabled ? 0 : 20
+      onMouseLeave={() => {
+        setIsPressed(false);
+        setIsHovered(false);
       }}
-      whileTap={{
-        scale: disabled ? 1 : 0.95,
-        z: disabled ? 0 : -10
-      }}
-      animate={{
-        boxShadow: isPressed
-          ? 'none'
-          : disabled
-          ? 'none'
-          : variant === 'primary'
-          ? '0 10px 30px -5px rgba(139, 92, 246, 0.5)'
-          : '0 5px 15px -3px rgba(0, 0, 0, 0.3)'
-      }}
-      transition={{
-        type: 'spring',
-        stiffness: 400,
-        damping: 25
-      }}
+      onMouseEnter={() => setIsHovered(true)}
       style={{
         transformStyle: 'preserve-3d',
-        perspective: 1000
+        perspective: 1000,
+        transform: disabled 
+          ? 'none' 
+          : isPressed 
+            ? 'scale(0.95) translateZ(-10px)' 
+            : isHovered 
+              ? 'scale(1.05) rotateX(5deg) translateZ(20px)' 
+              : 'none',
+        boxShadow: getBoxShadow()
       }}
     >
       {children}
-    </motion.button>
+    </button>
   );
 }
 
@@ -300,28 +305,28 @@ interface Badge3DProps {
 
 export function Badge3D({ children, color = '#00C9FF', className = '' }: Badge3DProps) {
   return (
-    <motion.div
-      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${className}`}
+    <div
+      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium animate-float ${className}`}
       style={{
         background: `linear-gradient(135deg, ${color}20, ${color}40)`,
         border: `1px solid ${color}60`,
-        boxShadow: `0 0 10px ${color}40`
-      }}
-      animate={{
-        y: [0, -5, 0],
-        boxShadow: [
-          `0 0 10px ${color}40`,
-          `0 5px 20px ${color}60`,
-          `0 0 10px ${color}40`
-        ]
-      }}
-      transition={{
-        duration: 2,
-        repeat: Infinity,
-        ease: 'easeInOut'
+        boxShadow: `0 0 10px ${color}40`,
+        animation: 'float 2s ease-in-out infinite'
       }}
     >
+      <style>{`
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0);
+            box-shadow: 0 0 10px ${color}40;
+          }
+          50% {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px ${color}60;
+          }
+        }
+      `}</style>
       {children}
-    </motion.div>
+    </div>
   );
 }
