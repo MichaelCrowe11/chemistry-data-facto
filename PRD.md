@@ -166,6 +166,13 @@ A research development platform that connects academic papers to production code
 - **Progression**: Search papers → Preview abstract → Extract code snippets → Generate implementation from algorithm description → Link to original paper → Add citation
 - **Success criteria**: Searches return relevant papers in <2s, code extraction 70%+ accuracy, proper citations generated, links maintained in code comments
 
+### Voice Commands for Hands-Free Coding (VR/AR - NEW - IMPLEMENTED)
+- **Functionality**: Complete hands-free IDE control via voice commands with AI-powered code dictation for VR/AR immersive environments
+- **Purpose**: Enable coding without keyboard in VR/AR, accessibility for hands-free operation, natural code creation through speech
+- **Trigger**: User clicks microphone icon or says "activate voice"
+- **Progression**: Click mic → Grant permissions → Say "start dictation" → Speak code description → Say "stop dictation" → AI converts to code → Review and insert
+- **Success criteria**: 90%+ command recognition accuracy, code generation in <3s, works in VR/AR modes, supports 15+ voice commands, real-time transcription feedback
+
 ### Experiment Tracking & Versioning (RESEARCH VALUE - NEW)
 - **Functionality**: Track ML experiments, hyperparameters, results, and model versions with automatic logging and comparison
 - **Purpose**: Enable reproducible research and easy comparison of experimental results
@@ -221,6 +228,34 @@ A research development platform that connects academic papers to production code
 - **Trigger**: User links paper/dataset to code or requests citation
 - **Progression**: Identify resource → Fetch metadata → Generate BibTeX → Add to bibliography → Insert inline citation → Export .bib file
 - **Success criteria**: Accurate metadata, multiple formats (BibTeX, APA, MLA), DOI resolution, dataset citations, software citations
+
+### Video Tutorial System (ENHANCED - NEW)
+- **Functionality**: Comprehensive video tutorial library with interactive step-by-step guides for all features
+- **Purpose**: Onboard users quickly and provide reference material for complex features
+- **Trigger**: User clicks video icon or views tutorial from onboarding
+- **Progression**: Browse tutorials → Select topic → Watch video → Follow steps → Click "Try Now" → Feature activates → Click "Practice" → Open related challenge → Complete interactive practice
+- **Success criteria**: 12+ tutorials covering all features, progress tracking, bookmarks, achievement system, seamless feature activation, integrated with code challenges
+
+### Data Protection & Backup System (ENHANCED - SECURITY)
+- **Functionality**: Comprehensive backup system with scheduling, versioning, integrity verification, and restore capabilities
+- **Purpose**: Protect user work from data loss with enterprise-grade backup and recovery features
+- **Trigger**: User clicks shield icon or creates manual/automatic backups
+- **Progression**: Configure schedule → System auto-creates backups → Browse backup history → Select backup → Restore or export → Verify integrity → Download backup JSON
+- **Success criteria**: Backups include all files, KV store data, assets, and settings; checksum verification; one-click restore; configurable retention policies; import/export functionality
+
+### Asset Management System (NEW - ORGANIZATION)
+- **Functionality**: Centralized asset library with categorization, search, tagging, protection, and metadata management
+- **Purpose**: Organize and protect all platform assets (images, videos, audio, documents, 3D models, fonts) in one place
+- **Trigger**: User clicks folder icon in toolbar
+- **Progression**: Browse assets by category → Search by name/tags → View details → Edit metadata → Tag assets → Mark as protected → Export asset list
+- **Success criteria**: Category-based organization; full-text search; tag system; protected asset locking; size tracking; export functionality; visual asset cards
+
+### Interactive Code Challenges (LEARNING - NEW)
+- **Functionality**: Gamified coding challenges with real-time test execution, hints, XP rewards, and progress tracking
+- **Purpose**: Provide hands-on practice for learning programming concepts with instant feedback
+- **Trigger**: User clicks target/challenges icon or "Practice" button in tutorials
+- **Progression**: Browse challenges by category/difficulty → Select challenge → Read objectives → Write code → Run tests → View results → Use hints if needed → Earn XP → Track stats → Build daily streak → Insert solution to editor
+- **Success criteria**: 10+ challenges across difficulty levels, real-time test execution, multi-level hints, XP/streak system, detailed progress stats, tutorial integration, code editor insertion
 
 ### Code Performance Profiler (REVOLUTIONARY - NEW)
 - **Functionality**: Visual performance profiling showing execution time for each line, identifying bottlenecks in real-time

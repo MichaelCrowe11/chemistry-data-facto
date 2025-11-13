@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Gear, Lightning, Eye, Sparkle } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -50,12 +49,16 @@ export function Performance3DSettings({
 
   // Monitor FPS
   useEffect(() => {
+    if (typeof window === 'undefined' || !window.performance || typeof window.performance.now !== 'function') {
+      return;
+    }
+
     let frameCount = 0;
-    let lastTime = performance.now();
+    let lastTime = window.performance.now();
 
     const measureFPS = () => {
       frameCount++;
-      const currentTime = performance.now();
+      const currentTime = window.performance.now();
 
       if (currentTime >= lastTime + 1000) {
         setFps(Math.round((frameCount * 1000) / (currentTime - lastTime)));
@@ -91,7 +94,7 @@ export function Performance3DSettings({
     return { level: 'Poor', color: 'text-red-400', badge: 'bg-red-500' };
   };
 
-  const performance = getPerformanceLevel();
+  const performanceLevel = getPerformanceLevel();
 
   const presets = [
     {
@@ -151,18 +154,12 @@ export function Performance3DSettings({
   if (!isOpen) return null;
 
   return (
-    <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={onClose}
     >
-      <motion.div
-        className="bg-card border border-border rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-auto"
-        initial={{ scale: 0.9, y: 20 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.9, y: 20 }}
+      <div
+        className="bg-card border border-border rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-auto animate-in zoom-in-95 slide-in-from-bottom-4 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -174,11 +171,11 @@ export function Performance3DSettings({
 
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">FPS:</span>
-            <Badge className={`${performance.badge} text-white`}>
+            <Badge className={`${performanceLevel.badge} text-white`}>
               {fps}
             </Badge>
-            <span className={`text-xs ${performance.color}`}>
-              {performance.level}
+            <span className={`text-xs ${performanceLevel.color}`}>
+              {performanceLevel.level}
             </span>
           </div>
         </div>
@@ -316,8 +313,8 @@ export function Performance3DSettings({
             Done
           </Button>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 

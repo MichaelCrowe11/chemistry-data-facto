@@ -1,5 +1,4 @@
-import { useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { createOrbitalRing, ease } from '../lib/three-utils';
 
@@ -19,6 +18,7 @@ export function PageTransition3D({
   direction = 'right'
 }: PageTransition3DProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
   const sceneRef = useRef<{
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
@@ -96,11 +96,12 @@ export function PageTransition3D({
   useEffect(() => {
     if (!sceneRef.current) return;
 
+    setIsAnimating(true);
     const { transitionRing, scene, camera, renderer } = sceneRef.current;
     if (!transitionRing) return;
 
     let progress = 0;
-    const duration = 0.8; // seconds
+    const duration = 0.8;
     const startTime = Date.now();
 
     const animate = () => {
@@ -110,7 +111,6 @@ export function PageTransition3D({
       progress = Math.min(elapsed / duration, 1);
       const easedProgress = ease.inOutCubic(progress);
 
-      // Animate transition ring
       transitionRing.scale.setScalar(1 + easedProgress * 2);
       transitionRing.rotation.z += 0.1;
       const opacity = Math.sin(easedProgress * Math.PI);
@@ -120,6 +120,8 @@ export function PageTransition3D({
 
       if (progress < 1) {
         sceneRef.current.animationId = requestAnimationFrame(animate);
+      } else {
+        setIsAnimating(false);
       }
     };
 
@@ -132,63 +134,52 @@ export function PageTransition3D({
     };
   }, [transitionKey]);
 
-  const variants = {
-    left: {
-      initial: { opacity: 0, x: -100, rotateY: -15 },
-      animate: { opacity: 1, x: 0, rotateY: 0 },
-      exit: { opacity: 0, x: 100, rotateY: 15 }
-    },
-    right: {
-      initial: { opacity: 0, x: 100, rotateY: 15 },
-      animate: { opacity: 1, x: 0, rotateY: 0 },
-      exit: { opacity: 0, x: -100, rotateY: -15 }
-    },
-    up: {
-      initial: { opacity: 0, y: 100, rotateX: 15 },
-      animate: { opacity: 1, y: 0, rotateX: 0 },
-      exit: { opacity: 0, y: -100, rotateX: -15 }
-    },
-    down: {
-      initial: { opacity: 0, y: -100, rotateX: -15 },
-      animate: { opacity: 1, y: 0, rotateX: 0 },
-      exit: { opacity: 0, y: 100, rotateX: 15 }
-    },
-    zoom: {
-      initial: { opacity: 0, scale: 0.8, z: -100 },
-      animate: { opacity: 1, scale: 1, z: 0 },
-      exit: { opacity: 0, scale: 1.2, z: 100 }
-    }
+  const getTransitionStyle = () => {
+    const styles: Record<string, React.CSSProperties> = {
+      left: {
+        transform: isAnimating ? 'translateX(0) rotateY(0deg)' : 'translateX(-100px) rotateY(-15deg)',
+        opacity: isAnimating ? 1 : 0
+      },
+      right: {
+        transform: isAnimating ? 'translateX(0) rotateY(0deg)' : 'translateX(100px) rotateY(15deg)',
+        opacity: isAnimating ? 1 : 0
+      },
+      up: {
+        transform: isAnimating ? 'translateY(0) rotateX(0deg)' : 'translateY(100px) rotateX(15deg)',
+        opacity: isAnimating ? 1 : 0
+      },
+      down: {
+        transform: isAnimating ? 'translateY(0) rotateX(0deg)' : 'translateY(-100px) rotateX(-15deg)',
+        opacity: isAnimating ? 1 : 0
+      },
+      zoom: {
+        transform: isAnimating ? 'scale(1) translateZ(0)' : 'scale(0.8) translateZ(-100px)',
+        opacity: isAnimating ? 1 : 0
+      }
+    };
+    return styles[direction];
   };
 
   return (
     <div className="relative w-full h-full">
-      {/* 3D Canvas for transition effects */}
       <div
         ref={canvasRef}
         className="absolute inset-0 pointer-events-none z-50"
         style={{ mixBlendMode: 'screen' }}
       />
 
-      {/* Content with Framer Motion transitions */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={transitionKey}
-          initial={variants[direction].initial}
-          animate={variants[direction].animate}
-          exit={variants[direction].exit}
-          transition={{
-            duration: 0.5,
-            ease: [0.43, 0.13, 0.23, 0.96]
-          }}
-          style={{
-            transformStyle: 'preserve-3d',
-            perspective: 1000
-          }}
-          className="w-full h-full"
-        >
-          {children}
-        </motion.div>
-      </AnimatePresence>
+      <div
+        key={transitionKey}
+        style={{
+          transformStyle: 'preserve-3d',
+          perspective: 1000,
+          transition: 'all 0.5s cubic-bezier(0.43, 0.13, 0.23, 0.96)',
+          ...getTransitionStyle()
+        }}
+        className="w-full h-full"
+      >
+        {children}
+      </div>
     </div>
   );
 }
