@@ -134,6 +134,11 @@ export class PerformanceManager {
    * Detect device capability for initial quality setting
    */
   private detectDeviceCapability(): QualityTier {
+    // Guard for SSR - return safe default if window is not available
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+      return 'medium'
+    }
+
     // Check for mobile
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
@@ -512,8 +517,12 @@ export function PerformanceMonitor({
 
 /**
  * Singleton instance for global usage
+ * Only instantiate on the client to avoid SSR issues
  */
-export const globalPerformanceManager = new PerformanceManager({
-  adaptiveQuality: true,
-  debugMode: import.meta.env.DEV
-})
+export const globalPerformanceManager =
+  typeof window !== 'undefined'
+    ? new PerformanceManager({
+        adaptiveQuality: true,
+        debugMode: import.meta.env.DEV
+      })
+    : (null as unknown as PerformanceManager)
