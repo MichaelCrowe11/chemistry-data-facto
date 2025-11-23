@@ -1,0 +1,2 @@
+api
+crowe_copilot

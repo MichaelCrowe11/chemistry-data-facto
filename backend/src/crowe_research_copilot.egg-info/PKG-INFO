@@ -1,0 +1,267 @@
+Metadata-Version: 2.4
+Name: crowe-research-copilot
+Version: 0.1.0
+Summary: Natural Products Analysis Platform with Chemistry Intelligence
+Author-email: Michael Crowe <michael.crowe@crowelogic.com>
+License: Proprietary
+Project-URL: Homepage, https://github.com/MichaelCrowe11/chemistry-data-facto
+Project-URL: Repository, https://github.com/MichaelCrowe11/chemistry-data-facto
+Project-URL: Bug Tracker, https://github.com/MichaelCrowe11/chemistry-data-facto/issues
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering :: Chemistry
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
+Classifier: License :: Other/Proprietary License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: fastapi>=0.109.0
+Requires-Dist: uvicorn[standard]>=0.27.0
+Requires-Dist: pydantic>=2.7.0
+Requires-Dist: pydantic-settings>=2.0.0
+Requires-Dist: rdkit>=2023.9.1
+Requires-Dist: networkx>=3.2.1
+Requires-Dist: polars>=0.20.0
+Requires-Dist: pyarrow>=14.0.0
+Requires-Dist: scipy>=1.11.0
+Requires-Dist: statsmodels>=0.14.0
+Requires-Dist: scikit-learn>=1.3.0
+Requires-Dist: pint>=0.23
+Requires-Dist: seaborn>=0.13.0
+Requires-Dist: matplotlib>=3.8.0
+Requires-Dist: plotnine>=0.13.0
+Requires-Dist: matchms==0.27.0
+Requires-Dist: numba<0.60.0,>=0.59.0
+Requires-Dist: spectrum-utils>=0.4.0
+Requires-Dist: pyteomics>=4.6
+Requires-Dist: requests>=2.31.0
+Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: redis>=5.0.0
+Requires-Dist: sqlalchemy>=2.0.0
+Requires-Dist: alembic>=1.13.0
+Requires-Dist: typer>=0.12.0
+Requires-Dist: rich>=13.7.0
+Requires-Dist: pandas>=2.1.0
+Requires-Dist: xlsxwriter>=3.1.0
+Requires-Dist: openpyxl>=3.1.0
+Requires-Dist: chembl-webresource-client>=0.10.0
+Requires-Dist: pubchempy>=1.0.4
+Requires-Dist: biopython>=1.83
+Requires-Dist: joblib>=1.3.0
+Requires-Dist: tqdm>=4.66.0
+Requires-Dist: numpy<2.0.0
+Provides-Extra: bayes
+Requires-Dist: pymc>=5.10; extra == "bayes"
+Requires-Dist: arviz>=0.16; extra == "bayes"
+Provides-Extra: dev
+Requires-Dist: black>=24.3; extra == "dev"
+Requires-Dist: ruff>=0.5; extra == "dev"
+Requires-Dist: mypy>=1.8; extra == "dev"
+Requires-Dist: pre-commit>=3.7; extra == "dev"
+Requires-Dist: pytest-cov>=4.1; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.23; extra == "dev"
+Provides-Extra: all
+Requires-Dist: np-copilot[bayes,dev]; extra == "all"
+Dynamic: license-file
+
+# Natural Products Copilot Backend
+
+Production-grade chemistry intelligence platform with RDKit, NetworkX, Polars, ORCID, and Zenodo integration.
+
+## Features
+
+- **Chemistry Intelligence**: RDKit-based structure standardization, descriptor calculation, fingerprints, substructure search
+- **Knowledge Graphs**: NetworkX typed multigraphs for compound-target-assay relationships with evidence tracking
+- **Dose-Response Analysis**: 4PL/5PL curve fitting with scipy, confidence intervals, synergy scoring (Bliss, HSA, Loewe)
+- **Mixture Analysis**: Multi-component formulation tracking, mass balance validation, synergy assessment
+- **Research Integration**: ORCID authentication and Zenodo data publication with DOI generation
+- **Type Safety**: Pydantic models with strict validation and pint-based unit handling
+- **High Performance**: Polars for dataframes, optimized for large-scale chemistry data
+
+## Installation
+
+```bash
+cd backend
+pip install -e .
+
+# With optional dependencies
+pip install -e ".[bayes,dev]"
+```
+
+## Quick Start
+
+### Run API Server
+
+```bash
+# Set environment variables
+export NP_ORCID_CLIENT_ID=your_orcid_client_id
+export NP_ORCID_CLIENT_SECRET=your_orcid_secret
+export NP_ZENODO_ACCESS_TOKEN=your_zenodo_token
+export NP_ZENODO_USE_SANDBOX=true
+
+# Start FastAPI server
+python src/api.py
+```
+
+API will be available at `http://localhost:8000`
+
+### Python Usage
+
+```python
+from crowe_copilot import chem_utils, models, kg
+
+# Standardize SMILES
+std_smiles = chem_utils.standardize_smiles("CCO")
+descriptors = chem_utils.descriptors(std_smiles)
+
+# Create compound model
+compound = models.Compound(
+    name="Ethanol",
+    smiles=std_smiles,
+    **descriptors,
+    identifiers={"PubChem": "CID702"}
+)
+
+# Build knowledge graph
+G = kg.new_kg()
+c_node = kg.add_node(G, "compound", "C001", **compound.dict())
+t_node = kg.add_node(G, "target", "T001", name="Example Target")
+kg.add_edge(G, c_node, t_node, "ACTS_ON", {"confidence": "high"})
+```
+
+### Dose-Response Fitting
+
+```python
+from crowe_copilot.dose_response import auto_fit
+import numpy as np
+
+concentrations = np.array([0.1, 1, 10, 100, 1000])  # µM
+responses = np.array([5, 25, 50, 75, 95])  # % inhibition
+
+model, params, errors, r2 = auto_fit(concentrations, responses)
+print(f"EC50: {params['ec50']:.2f} µM (R² = {r2:.3f})")
+```
+
+### ORCID Integration
+
+```python
+from crowe_copilot.orcid_client import ORCIDClient
+
+client = ORCIDClient(sandbox=True)
+auth_url = client.get_authorization_url()
+# Redirect user to auth_url
+
+# After OAuth callback with code:
+token_data = await client.exchange_code_for_token(code)
+profile = await client.get_profile(
+    token_data["orcid"],
+    token_data["access_token"]
+)
+```
+
+### Zenodo Publication
+
+```python
+from crowe_copilot.zenodo_client import ZenodoClient, ZenodoMetadata
+
+client = ZenodoClient(use_sandbox=True)
+
+metadata = ZenodoMetadata(
+    title="My Chemistry Dataset",
+    description="Comprehensive assay results...",
+    creators=[{
+        "name": "Smith, Jane",
+        "affiliation": "University",
+        "orcid": "0000-0001-2345-6789"
+    }],
+    keywords=["natural products", "drug discovery"],
+)
+
+# Create deposition
+deposition = await client.create_deposition(metadata)
+
+# Upload file (not shown: file upload logic)
+
+# Publish and get DOI
+published = await client.publish_deposition(deposition.id)
+print(f"DOI: {published.doi}")
+```
+
+## Testing
+
+```bash
+pytest
+pytest --cov=src/crowe_copilot --cov-report=html
+```
+
+## API Endpoints
+
+### Chemistry
+- `POST /api/v1/chemistry/standardize` - Standardize SMILES and compute descriptors
+- `POST /api/v1/chemistry/similarity` - Calculate Tanimoto similarity
+- `GET /api/v1/chemistry/substructure` - Check substructure match
+
+### ORCID
+- `GET /api/v1/orcid/auth-url` - Get OAuth authorization URL
+- `POST /api/v1/orcid/callback` - Handle OAuth callback
+- `GET /api/v1/orcid/profile/{orcid_id}` - Fetch ORCID profile
+
+### Zenodo
+- `POST /api/v1/zenodo/create` - Create new deposition
+- `POST /api/v1/zenodo/{id}/publish` - Publish deposition
+- `GET /api/v1/zenodo/depositions` - List depositions
+- `GET /api/v1/zenodo/{id}` - Get deposition details
+
+### General
+- `GET /health` - Health check
+- `GET /api/v1/stats` - Platform statistics
+
+## Configuration
+
+Environment variables (prefix with `NP_`):
+
+- `NP_ORCID_CLIENT_ID` - ORCID OAuth client ID
+- `NP_ORCID_CLIENT_SECRET` - ORCID OAuth secret
+- `NP_ORCID_REDIRECT_URI` - OAuth redirect URI
+- `NP_ZENODO_ACCESS_TOKEN` - Zenodo API token
+- `NP_ZENODO_USE_SANDBOX` - Use Zenodo sandbox (default: true)
+- `NP_LOG_LEVEL` - Logging level (default: INFO)
+- `NP_DATABASE_URL` - Database connection string (optional)
+- `NP_REDIS_URL` - Redis cache URL (optional)
+
+## Architecture
+
+```
+backend/
+├── src/crowe_copilot/
+│   ├── config.py          # Configuration with env vars
+│   ├── models.py          # Pydantic domain models
+│   ├── chem_utils.py      # RDKit chemistry utilities
+│   ├── tabular.py         # Polars dataframe schemas
+│   ├── kg.py              # NetworkX knowledge graphs
+│   ├── dose_response.py   # Curve fitting (4PL/5PL)
+│   ├── mixtures.py        # Synergy scoring (Bliss/HSA/Loewe)
+│   ├── units.py           # Pint unit handling
+│   ├── orcid_client.py    # ORCID OAuth/API
+│   ├── zenodo_client.py   # Zenodo publication
+│   ├── io_local.py        # File I/O utilities
+│   └── io_registry.py     # Data source fetch stubs
+├── tests/                 # Comprehensive test suite
+└── src/api.py            # FastAPI application
+```
+
+## Dependencies
+
+**Core**: RDKit, NetworkX, Polars, Pydantic, FastAPI, httpx, pint, scipy, scikit-learn
+
+**Optional**: pymc (Bayesian), arviz, python-louvain (graph clustering)
+
+**Dev**: pytest, hypothesis, black, ruff, mypy
+
+## License
+
+See LICENSE file in repository root.

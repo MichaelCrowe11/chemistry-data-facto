@@ -1,5 +1,5 @@
 import '@/lib/framer-polyfill'
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, Suspense } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { FileItem, EditorTab } from '@/types/editor'
 
@@ -14,46 +14,47 @@ import { WelcomeScreen } from '@/components/WelcomeScreen'
 import { UserProfile } from '@/components/UserProfile'
 import { SettingsDialog } from '@/components/SettingsDialog'
 import { ShareWorkspace } from '@/components/ShareWorkspace'
-import { AIChatPanel } from '@/components/AIChatPanel'
+import { AIChatPanel } from '@/components/LazyComponents'
 import { AICodeActions } from '@/components/AICodeActions'
 import { KeyboardShortcuts } from '@/components/KeyboardShortcuts'
-import { LiveExecutionPanel } from '@/components/LiveExecutionPanel'
-import { VisualDebugPanel } from '@/components/VisualDebugPanel'
-import { AIPredictionPanel } from '@/components/AIPredictionPanel'
-import { CodeComplexityVisualizer } from '@/components/CodeComplexityVisualizer'
-import { CollaborativeAIPairProgrammer } from '@/components/CollaborativeAIPairProgrammer'
-import { PerformanceProfiler } from '@/components/PerformanceProfiler'
-import { QuantumSynthesisPanel } from '@/components/QuantumSynthesisPanel'
-import { CodeDNASequencer } from '@/components/CodeDNASequencer'
-import { HolographicCodeViz } from '@/components/HolographicCodeViz'
-import { SentientDebugger } from '@/components/SentientDebugger'
-import { ResearchPaperPanel } from '@/components/ResearchPaperPanel'
-import { ExperimentTrackingPanel } from '@/components/ExperimentTrackingPanel'
-import { ReproducibilityEngine } from '@/components/ReproducibilityEngine'
+import { LiveExecutionPanel } from '@/components/LazyComponents'
+import { VisualDebugPanel } from '@/components/LazyComponents'
+import { AIPredictionPanel } from '@/components/LazyComponents'
+import { CodeComplexityVisualizer } from '@/components/LazyComponents'
+import { CollaborativeAIPairProgrammer } from '@/components/LazyComponents'
+import { PerformanceProfiler } from '@/components/LazyComponents'
+import { QuantumSynthesisPanel } from '@/components/LazyComponents'
+import { CodeDNASequencer } from '@/components/LazyComponents'
+import { HolographicCodeViz } from '@/components/LazyComponents'
+import { SentientDebugger } from '@/components/LazyComponents'
+import { ResearchPaperPanel } from '@/components/LazyComponents'
+import { ExperimentTrackingPanel } from '@/components/LazyComponents'
+import { ReproducibilityEngine } from '@/components/LazyComponents'
 import { detectLanguage, generateId } from '@/lib/editor-utils'
 import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask, Package, Gear, ImageSquare, Eye, MapPin, Desktop, Microphone, Question, Video, Target, Shield, FolderOpen, Lightning, ChartLineUp } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
+import { PanelSkeleton, FullscreenSkeleton } from '@/components/LoadingFallback'
 
-// 3D Enhancement Components
-import { MolecularBackground } from '@/components/MolecularBackground'
-import { Enhanced3DWelcome } from '@/components/Enhanced3DWelcome'
+// 3D Enhancement Components - Lazy Loaded
+import { MolecularBackground } from '@/components/LazyComponents'
+import { Enhanced3DWelcome } from '@/components/LazyComponents'
 import { Performance3DSettings, Performance3DConfig } from '@/components/Performance3DSettings'
 import { initializePerformanceConfig } from '@/lib/device-detection'
-import { Gallery3D } from '@/components/3DGallery'
-import { VRCodeSpace } from '@/components/VRCodeSpace'
-import { ARCodeOverlay } from '@/components/ARCodeOverlay'
-import { VRWorkspace } from '@/components/VRWorkspace'
-import { VoiceCodingPanel } from '@/components/VoiceCodingPanel'
-import { OnboardingTour } from '@/components/OnboardingTour'
+import { Gallery3D } from '@/components/LazyComponents'
+import { VRCodeSpace } from '@/components/LazyComponents'
+import { ARCodeOverlay } from '@/components/LazyComponents'
+import { VRWorkspace } from '@/components/LazyComponents'
+import { VoiceCodingPanel } from '@/components/LazyComponents'
+import { OnboardingTour } from '@/components/LazyComponents'
 import { QuickStartTips } from '@/components/QuickStartTips'
-import { VideoTutorialPanel } from '@/components/VideoTutorialPanel'
-import { CodeChallengesPanel } from '@/components/CodeChallengesPanel'
-import { DataProtectionPanel } from '@/components/DataProtectionPanel'
-import { AssetManager } from '@/components/AssetManager'
-import { AssetCompressor } from '@/components/AssetCompressor'
-import { OptimizationDashboard } from '@/components/OptimizationDashboard'
+import { VideoTutorialPanel } from '@/components/LazyComponents'
+import { CodeChallengesPanel } from '@/components/LazyComponents'
+import { DataProtectionPanel } from '@/components/LazyComponents'
+import { AssetManager } from '@/components/LazyComponents'
+import { AssetCompressor } from '@/components/LazyComponents'
+import { OptimizationDashboard } from '@/components/LazyComponents'
 
 function App() {
   const [userId, setUserId] = useState<string>('')
@@ -243,11 +244,13 @@ function App() {
 
   return (
     <div className="h-screen flex flex-col bg-background text-foreground overflow-hidden relative">
-      {/* 3D Molecular Background */}
-      <MolecularBackground
-        intensity={performanceConfig?.backgroundIntensity || 'high'}
-        interactive={performanceConfig?.enableParallax !== false}
-      />
+      {/* 3D Molecular Background - Lazy Loaded */}
+      <Suspense fallback={<div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900" />}>
+        <MolecularBackground
+          intensity={performanceConfig?.backgroundIntensity || 'high'}
+          interactive={performanceConfig?.enableParallax !== false}
+        />
+      </Suspense>
 
       {/* Performance Settings Modal */}
       <Performance3DSettings
@@ -647,66 +650,76 @@ function App() {
             </div>
 
             {rightPanel === 'execution' && activeTab && (
-              <div className="w-96 shrink-0">
-                <LiveExecutionPanel
-                  code={activeTab.content}
-                  language={activeTab.language}
-                  onRunComplete={(summary) => setLastRunSummary(summary)}
-                />
-              </div>
+              <Suspense fallback={<PanelSkeleton />}>
+                <div className="w-96 shrink-0">
+                  <LiveExecutionPanel
+                    code={activeTab.content}
+                    language={activeTab.language}
+                    onRunComplete={(summary) => setLastRunSummary(summary)}
+                  />
+                </div>
+              </Suspense>
             )}
 
             {rightPanel === 'debug' && activeTab && (
-              <div className="w-96 shrink-0">
-                <VisualDebugPanel
-                  code={activeTab.content}
-                  currentLine={activeTab.cursorPosition.line}
-                  timeline={lastRunSummary?.timeline}
-                />
-              </div>
+              <Suspense fallback={<PanelSkeleton />}>
+                <div className="w-96 shrink-0">
+                  <VisualDebugPanel
+                    code={activeTab.content}
+                    currentLine={activeTab.cursorPosition.line}
+                    timeline={lastRunSummary?.timeline}
+                  />
+                </div>
+              </Suspense>
             )}
 
             {rightPanel === 'predictions' && activeTab && (
-              <div className="w-96 shrink-0">
-                <AIPredictionPanel
-                  code={activeTab.content}
-                  language={activeTab.language}
-                  cursorLine={activeTab.cursorPosition.line}
-                  onApplyPrediction={(code) => {
-                    const lines = activeTab.content.split('\n')
-                    lines.splice(activeTab.cursorPosition.line, 0, code)
-                    handleContentChange(lines.join('\n'))
-                  }}
-                />
-              </div>
+              <Suspense fallback={<PanelSkeleton />}>
+                <div className="w-96 shrink-0">
+                  <AIPredictionPanel
+                    code={activeTab.content}
+                    language={activeTab.language}
+                    cursorLine={activeTab.cursorPosition.line}
+                    onApplyPrediction={(code) => {
+                      const lines = activeTab.content.split('\n')
+                      lines.splice(activeTab.cursorPosition.line, 0, code)
+                      handleContentChange(lines.join('\n'))
+                    }}
+                  />
+                </div>
+              </Suspense>
             )}
 
             {rightPanel === 'complexity' && activeTab && (
-              <div className="w-96 shrink-0">
-                <CodeComplexityVisualizer
-                  code={activeTab.content}
-                  language={activeTab.language}
-                />
-              </div>
+              <Suspense fallback={<PanelSkeleton />}>
+                <div className="w-96 shrink-0">
+                  <CodeComplexityVisualizer
+                    code={activeTab.content}
+                    language={activeTab.language}
+                  />
+                </div>
+              </Suspense>
             )}
 
             {rightPanel === 'pair' && (
-              <div className="w-96 shrink-0">
-                <CollaborativeAIPairProgrammer
-                  files={safeFiles}
-                  activeFile={activeTab}
-                  onCodeGenerated={(code) => {
-                    if (activeTab) {
-                      const lines = activeTab.content.split('\n')
-                      lines.push(code)
-                      handleContentChange(lines.join('\n'))
-                    }
-                  }}
-                  onFileCreated={(name, content) => {
-                    handleFileCreate(name)
-                  }}
-                />
-              </div>
+              <Suspense fallback={<PanelSkeleton />}>
+                <div className="w-96 shrink-0">
+                  <CollaborativeAIPairProgrammer
+                    files={safeFiles}
+                    activeFile={activeTab}
+                    onCodeGenerated={(code) => {
+                      if (activeTab) {
+                        const lines = activeTab.content.split('\n')
+                        lines.push(code)
+                        handleContentChange(lines.join('\n'))
+                      }
+                    }}
+                    onFileCreated={(name, content) => {
+                      handleFileCreate(name)
+                    }}
+                  />
+                </div>
+              </Suspense>
             )}
 
             {rightPanel === 'performance' && activeTab && (

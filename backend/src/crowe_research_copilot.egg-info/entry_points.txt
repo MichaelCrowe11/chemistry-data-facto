@@ -1,0 +1,2 @@
+[console_scripts]
+crowe-copilot = crowe_copilot.cli:app
