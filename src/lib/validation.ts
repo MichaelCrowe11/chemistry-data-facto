@@ -90,7 +90,10 @@ export const paperSearchSchema = z
   .max(500, 'Search query too long (max 500 characters)')
 
 /**
- * Sanitize HTML to prevent XSS attacks
+ * Escape a string so it can be safely inserted into HTML.
+ *
+ * @param html - Input text or markup to be escaped
+ * @returns The escaped HTML string with special characters replaced by entities, suitable for use as element.innerHTML
  */
 export function sanitizeHtml(html: string): string {
   const div = document.createElement('div')
@@ -99,7 +102,14 @@ export function sanitizeHtml(html: string): string {
 }
 
 /**
- * Sanitize file name
+ * Produce a filesystem-safe file name that conforms to the module's filename rules.
+ *
+ * Attempts to validate and return a name that satisfies `fileNameSchema`. If validation fails,
+ * a safe fallback is returned by replacing disallowed characters, trimming to 255 characters,
+ * and returning `'untitled'` when the result would be empty.
+ *
+ * @param name - The original file name to sanitize
+ * @returns A sanitized file name suitable for use on the filesystem
  */
 export function sanitizeFileName(name: string): string {
   try {
@@ -119,7 +129,11 @@ export function sanitizeFileName(name: string): string {
 }
 
 /**
- * Validate file size
+ * Checks whether a string's byte size does not exceed a given limit.
+ *
+ * @param content - The string whose byte size will be measured.
+ * @param maxSizeBytes - Maximum allowed size in bytes (default: 10 * 1024 * 1024).
+ * @returns `true` if the UTF-8 byte size of `content` is less than or equal to `maxSizeBytes`, `false` otherwise.
  */
 export function validateFileSize(content: string, maxSizeBytes: number = 10 * 1024 * 1024): boolean {
   const sizeBytes = new Blob([content]).size
@@ -127,8 +141,12 @@ export function validateFileSize(content: string, maxSizeBytes: number = 10 * 10
 }
 
 /**
- * Sanitize code for execution
- * Removes potentially dangerous patterns
+ * Sanitizes source code by removing known dangerous runtime-specific patterns.
+ *
+ * Logs a console warning for each removed pattern.
+ *
+ * @param code - The source code to sanitize.
+ * @returns A copy of `code` where detected dangerous patterns (for example `import.meta`, `__dirname`, `__filename`, `process.env`) are replaced with a security placeholder.
  */
 export function sanitizeCode(code: string): string {
   // Remove import.meta and other dangerous patterns
@@ -153,7 +171,12 @@ export function sanitizeCode(code: string): string {
 }
 
 /**
- * Validate and sanitize workspace ID
+ * Checks whether a workspace identifier is valid according to the module's user ID rules.
+ *
+ * The identifier must consist of letters, digits, underscores, or hyphens and must satisfy the module's length constraints.
+ *
+ * @param id - The workspace identifier to validate
+ * @returns `true` if `id` meets the allowed-character and length requirements, `false` otherwise.
  */
 export function validateWorkspaceId(id: string): boolean {
   try {
@@ -165,7 +188,10 @@ export function validateWorkspaceId(id: string): boolean {
 }
 
 /**
- * Sanitize object keys to prevent prototype pollution
+ * Create a shallow copy of an object with keys that can cause prototype pollution removed.
+ *
+ * @param obj - The source object whose keys will be sanitized
+ * @returns A new object containing the same entries as `obj` except any keys named `__proto__`, `constructor`, or `prototype` are omitted
  */
 export function sanitizeObjectKeys<T extends Record<string, unknown>>(obj: T): T {
   const sanitized: Record<string, unknown> = {}
@@ -183,7 +209,10 @@ export function sanitizeObjectKeys<T extends Record<string, unknown>>(obj: T): T
 }
 
 /**
- * Validation error formatter
+ * Format a Zod validation error into a single human-readable message.
+ *
+ * @param error - The Zod validation error to format
+ * @returns A single string where each validation issue is represented as `"path: message"` (or just the message if no path), joined by commas
  */
 export function formatValidationError(error: z.ZodError): string {
   const messages = error.errors.map(err => {
@@ -194,7 +223,11 @@ export function formatValidationError(error: z.ZodError): string {
 }
 
 /**
- * Safe JSON parse with validation
+ * Parse a JSON string and validate the result against a Zod schema.
+ *
+ * @param json - The JSON string to parse.
+ * @param schema - Zod schema used to validate the parsed value.
+ * @returns The parsed value typed as `T` if parsing and validation succeed, `null` if parsing fails or validation fails.
  */
 export function safeJsonParse<T>(json: string, schema: z.ZodSchema<T>): T | null {
   try {
@@ -207,7 +240,14 @@ export function safeJsonParse<T>(json: string, schema: z.ZodSchema<T>): T | null
 }
 
 /**
- * React hook for validation
+ * Provides reusable validation and sanitization utilities for file names, file content, and experiment names.
+ *
+ * @returns An object with the following properties:
+ * - `validateFileName` — Validates a file name and returns `{ valid: boolean; error?: string }`.
+ * - `validateFileContent` — Validates file content and returns `{ valid: boolean; error?: string }`.
+ * - `validateExperimentName` — Validates an experiment name and returns `{ valid: boolean; error?: string }`.
+ * - `sanitizeFileName` — Sanitizes or normalizes a file name when validation fails.
+ * - `sanitizeCode` — Removes or neutralizes dangerous code patterns from a code string.
  */
 export function useValidation() {
   const validateFileName = (name: string): { valid: boolean; error?: string } => {

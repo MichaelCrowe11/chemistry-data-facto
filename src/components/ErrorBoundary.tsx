@@ -256,7 +256,10 @@ ${errorInfo?.componentStack || 'No component stack'}
 }
 
 /**
- * Lightweight error boundary for isolating component failures
+ * Wraps children in an error boundary that isolates failures to a single component.
+ *
+ * @param componentName - Human-readable component name displayed in the fallback UI and included in error logs.
+ * @returns The children wrapped with an isolated ErrorBoundary; if the wrapped component throws, the provided fallback UI is rendered instead.
  */
 export function ComponentErrorBoundary({
   children,
@@ -289,7 +292,11 @@ export function ComponentErrorBoundary({
 }
 
 /**
- * Hook to programmatically trigger error boundary
+ * Returns a React state setter that, when called with an `Error`, will cause that error to be thrown in the next render,
+ * triggering the nearest ErrorBoundary. This works by storing the error in state and throwing it in a `useEffect`.
+ *
+ * @returns A React state setter; calling it with an `Error` will cause that error to be thrown in the next render cycle,
+ *          so an enclosing ErrorBoundary can catch it.
  */
 export function useErrorHandler() {
   const [error, setError] = React.useState<Error | null>(null)
