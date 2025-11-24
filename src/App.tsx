@@ -865,10 +865,11 @@ function App() {
                       case 'save':
                         saveCurrentFile()
                         break
-                      case 'newFile':
+                      case 'newFile': {
                         const fileName = prompt('Enter file name:')
                         if (fileName) handleFileCreate(fileName)
                         break
+                      }
                       case 'closeFile':
                         if (safeActiveTabId) handleTabClose(safeActiveTabId)
                         break
