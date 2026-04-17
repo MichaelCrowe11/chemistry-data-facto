@@ -2,10 +2,6 @@ import '@/lib/framer-polyfill'
 import { useState, useEffect, useCallback, useMemo, Suspense } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { FileItem, EditorTab } from '@/types/editor'
-
-if (typeof window !== 'undefined' && window.performance && typeof window.performance.now !== 'function') {
-  window.performance.now = () => Date.now();
-}
 import { FileTree } from '@/components/FileTree'
 import { TabBar } from '@/components/TabBar'
 import { CodeEditor } from '@/components/CodeEditor'
