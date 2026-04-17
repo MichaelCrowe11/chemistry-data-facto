@@ -31,7 +31,7 @@ import { ResearchPaperPanel } from '@/components/LazyComponents'
 import { ExperimentTrackingPanel } from '@/components/LazyComponents'
 import { ReproducibilityEngine } from '@/components/LazyComponents'
 import { detectLanguage, generateId } from '@/lib/editor-utils'
-import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask, Package, Gear, ImageSquare, Eye, MapPin, Desktop, Microphone, Question, Video, Target, Shield, FolderOpen, Lightning, ChartLineUp } from '@phosphor-icons/react'
+import { Sidebar, List, Sparkle, Selection, Play, Bug, Brain, ChartBar, Robot, Speedometer, Atom, Dna, Cube, Article, Flask, Package, Gear, ImageSquare, Eye, MapPin, Desktop, Microphone, Question, Video, Target, Shield, FolderOpen, Lightning, ChartLineUp, CloudArrowUp } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
@@ -55,6 +55,7 @@ import { DataProtectionPanel } from '@/components/LazyComponents'
 import { AssetManager } from '@/components/LazyComponents'
 import { AssetCompressor } from '@/components/LazyComponents'
 import { OptimizationDashboard } from '@/components/LazyComponents'
+import { CDNIntegrationPanel } from '@/components/CDNIntegrationPanel'
 
 function App() {
   const [userId, setUserId] = useState<string>('')
@@ -66,7 +67,7 @@ function App() {
   const [sidebarVisible, setSidebarVisible] = useState(true)
   const [aiChatVisible, setAiChatVisible] = useState(false)
   const [selectedCode, setSelectedCode] = useState('')
-  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | 'reproducibility' | 'gallery3d' | 'voice' | 'tutorials' | 'challenges' | 'dataprotection' | 'assets' | 'compressor' | 'optimization' | null>('papers')
+  const [rightPanel, setRightPanel] = useState<'execution' | 'debug' | 'predictions' | 'complexity' | 'pair' | 'performance' | 'quantum' | 'dna' | 'holographic' | 'sentient' | 'papers' | 'experiments' | 'reproducibility' | 'gallery3d' | 'voice' | 'tutorials' | 'challenges' | 'dataprotection' | 'assets' | 'compressor' | 'optimization' | 'cdn' | null>('papers')
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [performanceConfig, setPerformanceConfig] = useState<Performance3DConfig | null>(null)
   const [vrMode, setVrMode] = useState<'code' | 'workspace' | null>(null)
@@ -419,6 +420,17 @@ function App() {
             data-tour="optimization"
           >
             <ChartLineUp className="h-5 w-5 text-green-400" weight={rightPanel === 'optimization' ? 'fill' : 'duotone'} />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => setRightPanel(rightPanel === 'cdn' ? null : 'cdn')}
+            className="h-8 w-8 bg-gradient-to-r from-cyan-500/20 to-blue-500/20"
+            title="CDN Integration & Asset Distribution"
+            aria-label="CDN Integration"
+            data-tour="cdn"
+          >
+            <CloudArrowUp className="h-5 w-5 text-cyan-400" weight={rightPanel === 'cdn' ? 'fill' : 'duotone'} />
           </Button>
           <div className="text-xs text-muted-foreground hidden sm:block">
             v9.0.0 VR/AR Edition
@@ -1008,6 +1020,14 @@ function App() {
             {rightPanel === 'optimization' && (
               <div className="w-96 shrink-0">
                 <OptimizationDashboard
+                  onClose={() => setRightPanel(null)}
+                />
+              </div>
+            )}
+
+            {rightPanel === 'cdn' && (
+              <div className="w-96 shrink-0">
+                <CDNIntegrationPanel
                   onClose={() => setRightPanel(null)}
                 />
               </div>
