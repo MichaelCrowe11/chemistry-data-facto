@@ -1,6 +1,9 @@
 import { Compound, Reaction, Literature, Stats, HealthStatus } from '@/types/chemistry'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
+const runtimeApiUrl =
+  (globalThis as any)?.window?.__ENV?.VITE_API_URL || (globalThis as any)?.__ENV?.VITE_API_URL
+
+const API_BASE_URL = runtimeApiUrl || import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
 
 export const chemistryApi = {
   async getHealth(): Promise<HealthStatus> {

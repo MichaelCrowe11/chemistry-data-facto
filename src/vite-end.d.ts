@@ -1,4 +1,18 @@
 /// <reference types="vite/client" />
+
+declare global {
+  interface Window {
+    __ENV?: {
+      VITE_API_URL?: string
+    }
+  }
+
+  // Some environments may attach this directly on globalThis.
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  var __ENV: Window['__ENV'] | undefined
+}
+
+export {}
 declare const GITHUB_RUNTIME_PERMANENT_NAME: string
 declare const BASE_KV_SERVICE_URL: string
 

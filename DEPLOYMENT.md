@@ -85,6 +85,59 @@ This guide will walk you through deploying Crowe Code to Vercel with Supabase au
 | `VITE_AI_GATEWAY_URL` | AI Gateway URL (default provided) | No |
 | `VITE_API_URL` | Chemistry data API URL (if using) | No |
 
+## Deploy Backend API to Railway
+
+This repo includes a FastAPI backend in `backend/` that can be deployed as a Railway service.
+
+### Option A: Deploy the backend (recommended)
+
+1. Create a new Railway project and add a service from this GitHub repo.
+2. In the service settings, set the **Root Directory** to `backend`.
+3. Railway will detect and build using `backend/Dockerfile`.
+4. Add any needed environment variables (all optional unless you use those integrations):
+
+   - `NP_ORCID_CLIENT_ID`
+   - `NP_ORCID_CLIENT_SECRET`
+   - `NP_ORCID_REDIRECT_URI`
+   - `NP_ZENODO_ACCESS_TOKEN`
+   - `NP_ZENODO_USE_SANDBOX` (default: true)
+
+   Railway will automatically provide `PORT` and the backend binds to it.
+
+5. Deploy, then verify:
+   - `GET /health`
+   - `GET /api/v1/stats`
+
+### Option B: Deploy both frontend + backend (two Railway services)
+
+1. Create a new Railway project.
+
+2. Add **Backend** service:
+   - Service → Deploy from GitHub
+   - **Root Directory**: `backend`
+   - Build uses `backend/Dockerfile`
+   - Deploy and copy the public URL (you’ll use it for the frontend build arg).
+
+3. Add **Frontend** service:
+   - Service → Deploy from GitHub
+   - **Root Directory**: repo root
+   - Build uses `Dockerfile` + `nginx.conf.template`
+
+4. Configure the frontend to call the backend:
+   - Set a **service variable**: `VITE_API_URL=https://<backend-service>.up.railway.app/api/v1`
+
+   The frontend reads this at runtime from `/env.js` (generated at container startup).
+
+5. Deploy, then verify:
+   - Frontend `GET /health` returns `healthy`
+   - Frontend UI can fetch backend `GET /health` and `GET /api/v1/stats`
+
+### Hooking up the frontend (optional)
+
+If you also deploy the frontend elsewhere (e.g. Vercel) or as a second Railway service, set:
+
+- `VITE_API_URL` to your Railway backend URL (e.g. `https://<service>.up.railway.app/api/v1`).
+
 ## Features Enabled
 
 Once deployed with Supabase authentication, users can:

@@ -46,6 +46,12 @@ To change this, create a `.env` file:
 VITE_API_URL=http://your-api-url:8000/api/v1
 ```
 
+### Railway (Docker) note
+
+If you deploy the frontend using the repo `Dockerfile` (nginx) on Railway, set `VITE_API_URL` as a **Railway service variable**. The container generates `/env.js` at startup so the frontend can read it at runtime:
+
+- `VITE_API_URL=https://<backend-service>.up.railway.app/api/v1`
+
 ## Usage
 
 ### Dashboard Tab

@@ -21,3 +21,29 @@ No problem! If you were just checking things out and don’t need to keep this c
 📄 License For Spark Template Resources 
 
 The Spark Template files and resources from GitHub are licensed under the terms of the MIT license, Copyright GitHub, Inc.
+
+---
+
+## Deploy to Railway (Frontend + Backend)
+
+This repo supports deploying the backend API and the frontend UI as two Railway services.
+
+### CLI setup (recommended)
+
+Run the included script from your machine:
+
+- `./railway-deploy.sh`
+
+### Backend service
+
+- Service root directory: `backend`
+- Build: uses `backend/Dockerfile`
+- Verify: `GET /health` and `GET /api/v1/stats`
+
+### Frontend service
+
+- Service root directory: repo root
+- Build: uses `Dockerfile`
+- Required service variable: `VITE_API_URL=https://<backend-service>.up.railway.app/api/v1`
+
+The container generates `/env.js` at startup so the frontend can read `VITE_API_URL` at runtime.

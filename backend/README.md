@@ -33,6 +33,9 @@ export NP_ORCID_CLIENT_SECRET=your_orcid_secret
 export NP_ZENODO_ACCESS_TOKEN=your_zenodo_token
 export NP_ZENODO_USE_SANDBOX=true
 
+# Optional: override bind port (useful on Railway)
+export PORT=8000
+
 # Start FastAPI server
 python src/api.py
 ```
