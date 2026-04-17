@@ -1,4 +1,3 @@
-import '@/lib/framer-polyfill'
 import { useState, useEffect, useCallback, useMemo, Suspense } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { FileItem, EditorTab } from '@/types/editor'

@@ -9,6 +9,47 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&family=IBM+Plex+Serif&family=JetBrains+Mono&family=Space+Grotesk:wght@400;600;700&display=swap">
     <link href="/src/main.css" rel="stylesheet" />
+    <script>
+        if (typeof window !== 'undefined') {
+            if (!window.performance) {
+                window.performance = {
+                    now: function() { return Date.now(); },
+                    timing: { navigationStart: Date.now() },
+                    navigation: { type: 0 },
+                    timeOrigin: Date.now()
+                };
+            } else if (typeof window.performance.now !== 'function') {
+                window.performance.now = function() { return Date.now(); };
+            }
+            
+            if (typeof window.requestAnimationFrame !== 'function') {
+                let lastTime = 0;
+                window.requestAnimationFrame = function(callback) {
+                    const currentTime = Date.now();
+                    const timeToCall = Math.max(0, 16 - (currentTime - lastTime));
+                    const id = window.setTimeout(function() {
+                        callback(currentTime + timeToCall);
+                    }, timeToCall);
+                    lastTime = currentTime + timeToCall;
+                    return id;
+                };
+            }
+            
+            if (typeof window.cancelAnimationFrame !== 'function') {
+                window.cancelAnimationFrame = function(id) {
+                    clearTimeout(id);
+                };
+            }
+
+            if (typeof window.ResizeObserver === 'undefined') {
+                window.ResizeObserver = class ResizeObserver {
+                    observe() {}
+                    unobserve() {}
+                    disconnect() {}
+                };
+            }
+        }
+    </script>
 </head>
 
 <body>

@@ -1,9 +1,17 @@
 if (typeof window !== 'undefined') {
-  if (!window.performance || typeof window.performance.now !== 'function') {
-    if (!window.performance) {
-      window.performance = {} as Performance;
-    }
-    window.performance.now = () => Date.now();
+  if (!window.performance) {
+    (window as any).performance = {
+      now: function() { return Date.now(); },
+      timing: {
+        navigationStart: Date.now()
+      },
+      navigation: {
+        type: 0
+      },
+      timeOrigin: Date.now()
+    };
+  } else if (typeof window.performance.now !== 'function') {
+    window.performance.now = function() { return Date.now(); };
   }
   
   if (typeof window.requestAnimationFrame !== 'function') {
@@ -45,12 +53,28 @@ if (typeof window !== 'undefined') {
   if (typeof originalGetComputedStyle === 'function') {
     window.getComputedStyle = function(element: Element, pseudoElt?: string | null) {
       try {
-        return originalGetComputedStyle(element, pseudoElt);
+        const styles = originalGetComputedStyle.call(this, element, pseudoElt);
+        if (!styles || typeof styles.getPropertyValue !== 'function') {
+          throw new Error('Invalid styles');
+        }
+        return styles;
       } catch (e) {
-        return {
-          getPropertyValue: () => '',
+        const fallbackStyles = {
+          getPropertyValue: (prop: string) => {
+            const defaults: Record<string, string> = {
+              'display': 'block',
+              'position': 'static',
+              'box-sizing': 'border-box',
+              'transform': 'none',
+              'opacity': '1',
+              'visibility': 'visible',
+              'width': 'auto',
+              'height': 'auto'
+            };
+            return defaults[prop] || '';
+          },
           getPropertyPriority: () => '',
-          item: () => '',
+          item: (index: number) => '',
           length: 0,
           cssText: '',
           parentRule: null,
@@ -58,7 +82,18 @@ if (typeof window !== 'undefined') {
           setProperty: () => {},
           [Symbol.iterator]: function* () {}
         } as unknown as CSSStyleDeclaration;
+        return fallbackStyles;
       }
     };
   }
+
+  if (typeof (window as any).ResizeObserver === 'undefined') {
+    (window as any).ResizeObserver = class ResizeObserver {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+  }
 }
+
+export {}
