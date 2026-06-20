@@ -10,19 +10,39 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&family=IBM+Plex+Serif&family=JetBrains+Mono&family=Space+Grotesk:wght@400;600;700&display=swap">
     <link href="/src/main.css" rel="stylesheet" />
     <script>
-        if (typeof window !== 'undefined') {
+        (function() {
+            'use strict';
+            if (typeof window === 'undefined') return;
+            
+            const startTime = Date.now();
+            
             if (!window.performance) {
-                window.performance = {
-                    now: function() { return Date.now(); },
-                    timing: { navigationStart: Date.now() },
-                    navigation: { type: 0 },
-                    timeOrigin: Date.now()
-                };
-            } else if (typeof window.performance.now !== 'function') {
-                window.performance.now = function() { return Date.now(); };
+                window.performance = {};
             }
             
-            if (typeof window.requestAnimationFrame !== 'function') {
+            if (!window.performance.now) {
+                window.performance.now = function() { 
+                    return Date.now() - startTime; 
+                };
+            }
+            
+            if (!window.performance.timing) {
+                window.performance.timing = { 
+                    navigationStart: startTime 
+                };
+            }
+            
+            if (!window.performance.navigation) {
+                window.performance.navigation = { 
+                    type: 0 
+                };
+            }
+            
+            if (!window.performance.timeOrigin) {
+                window.performance.timeOrigin = startTime;
+            }
+            
+            if (!window.requestAnimationFrame) {
                 let lastTime = 0;
                 window.requestAnimationFrame = function(callback) {
                     const currentTime = Date.now();
@@ -35,20 +55,20 @@
                 };
             }
             
-            if (typeof window.cancelAnimationFrame !== 'function') {
+            if (!window.cancelAnimationFrame) {
                 window.cancelAnimationFrame = function(id) {
                     clearTimeout(id);
                 };
             }
 
-            if (typeof window.ResizeObserver === 'undefined') {
+            if (!window.ResizeObserver) {
                 window.ResizeObserver = class ResizeObserver {
                     observe() {}
                     unobserve() {}
                     disconnect() {}
                 };
             }
-        }
+        })();
     </script>
 </head>
 

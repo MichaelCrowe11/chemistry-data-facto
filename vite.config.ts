@@ -21,7 +21,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(projectRoot, 'src')
-    }
+    },
+    dedupe: ['react', 'react-dom']
   },
   build: {
     target: 'es2020',
@@ -64,8 +65,12 @@ export default defineConfig({
       '@github/spark/hooks',
     ],
     exclude: ['@github/spark'],
+    esbuildOptions: {
+      target: 'es2020'
+    }
   },
   server: {
     compress: true,
   },
+  clearScreen: false,
 });

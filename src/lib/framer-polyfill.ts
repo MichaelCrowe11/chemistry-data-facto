@@ -1,17 +1,30 @@
 if (typeof window !== 'undefined') {
+  const startTime = Date.now();
+  
   if (!window.performance) {
-    (window as any).performance = {
-      now: function() { return Date.now(); },
-      timing: {
-        navigationStart: Date.now()
-      },
-      navigation: {
-        type: 0
-      },
-      timeOrigin: Date.now()
+    (window as any).performance = {};
+  }
+  
+  if (!window.performance.now || typeof window.performance.now !== 'function') {
+    window.performance.now = function() { 
+      return Date.now() - (window.performance.timeOrigin || startTime); 
     };
-  } else if (typeof window.performance.now !== 'function') {
-    window.performance.now = function() { return Date.now(); };
+  }
+  
+  if (!window.performance.timing) {
+    (window.performance as any).timing = {
+      navigationStart: startTime
+    };
+  }
+  
+  if (!window.performance.navigation) {
+    (window.performance as any).navigation = {
+      type: 0
+    };
+  }
+  
+  if (!window.performance.timeOrigin) {
+    (window.performance as any).timeOrigin = startTime;
   }
   
   if (typeof window.requestAnimationFrame !== 'function') {
