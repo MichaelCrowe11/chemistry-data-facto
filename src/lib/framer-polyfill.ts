@@ -1,30 +1,35 @@
 if (typeof window !== 'undefined') {
   const startTime = Date.now();
   
-  if (!window.performance) {
-    (window as any).performance = {};
-  }
-  
-  if (!window.performance.now || typeof window.performance.now !== 'function') {
-    window.performance.now = function() { 
-      return Date.now() - (window.performance.timeOrigin || startTime); 
+  if (!window.performance || typeof window.performance !== 'object') {
+    (window as any).performance = {
+      now: function() { return Date.now() - startTime; },
+      timing: { navigationStart: startTime },
+      navigation: { type: 0 },
+      timeOrigin: startTime
     };
-  }
-  
-  if (!window.performance.timing) {
-    (window.performance as any).timing = {
-      navigationStart: startTime
-    };
-  }
-  
-  if (!window.performance.navigation) {
-    (window.performance as any).navigation = {
-      type: 0
-    };
-  }
-  
-  if (!window.performance.timeOrigin) {
-    (window.performance as any).timeOrigin = startTime;
+  } else {
+    if (!window.performance.now || typeof window.performance.now !== 'function') {
+      window.performance.now = function() { 
+        return Date.now() - ((window.performance.timeOrigin as number) || startTime); 
+      };
+    }
+    
+    if (!window.performance.timing) {
+      (window.performance as any).timing = {
+        navigationStart: startTime
+      };
+    }
+    
+    if (!window.performance.navigation) {
+      (window.performance as any).navigation = {
+        type: 0
+      };
+    }
+    
+    if (typeof window.performance.timeOrigin !== 'number') {
+      (window.performance as any).timeOrigin = startTime;
+    }
   }
   
   if (typeof window.requestAnimationFrame !== 'function') {

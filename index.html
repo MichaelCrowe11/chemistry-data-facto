@@ -16,33 +16,34 @@
             
             const startTime = Date.now();
             
-            if (!window.performance) {
-                window.performance = {};
-            }
-            
-            if (!window.performance.now) {
-                window.performance.now = function() { 
-                    return Date.now() - startTime; 
+            if (!window.performance || typeof window.performance !== 'object') {
+                window.performance = {
+                    now: function() { return Date.now() - startTime; },
+                    timing: { navigationStart: startTime },
+                    navigation: { type: 0 },
+                    timeOrigin: startTime
                 };
+            } else {
+                if (typeof window.performance.now !== 'function') {
+                    window.performance.now = function() { 
+                        return Date.now() - (window.performance.timeOrigin || startTime); 
+                    };
+                }
+                
+                if (!window.performance.timing) {
+                    window.performance.timing = { navigationStart: startTime };
+                }
+                
+                if (!window.performance.navigation) {
+                    window.performance.navigation = { type: 0 };
+                }
+                
+                if (typeof window.performance.timeOrigin !== 'number') {
+                    window.performance.timeOrigin = startTime;
+                }
             }
             
-            if (!window.performance.timing) {
-                window.performance.timing = { 
-                    navigationStart: startTime 
-                };
-            }
-            
-            if (!window.performance.navigation) {
-                window.performance.navigation = { 
-                    type: 0 
-                };
-            }
-            
-            if (!window.performance.timeOrigin) {
-                window.performance.timeOrigin = startTime;
-            }
-            
-            if (!window.requestAnimationFrame) {
+            if (typeof window.requestAnimationFrame !== 'function') {
                 let lastTime = 0;
                 window.requestAnimationFrame = function(callback) {
                     const currentTime = Date.now();
@@ -55,13 +56,13 @@
                 };
             }
             
-            if (!window.cancelAnimationFrame) {
+            if (typeof window.cancelAnimationFrame !== 'function') {
                 window.cancelAnimationFrame = function(id) {
                     clearTimeout(id);
                 };
             }
 
-            if (!window.ResizeObserver) {
+            if (typeof window.ResizeObserver === 'undefined') {
                 window.ResizeObserver = class ResizeObserver {
                     observe() {}
                     unobserve() {}
