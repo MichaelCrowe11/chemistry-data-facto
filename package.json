@@ -81,7 +81,6 @@
         "tw-animate-css": "^1.2.4",
         "uuid": "^11.1.0",
         "vaul": "^1.1.2",
-        "vite": "^6.4.3",
         "zod": "^3.25.76"
     },
     "devDependencies": {
@@ -95,7 +94,8 @@
         "globals": "^16.0.0",
         "tailwindcss": "^4.1.11",
         "typescript": "~5.7.2",
-        "typescript-eslint": "^8.38.0"
+        "typescript-eslint": "^8.38.0",
+        "vite": "^6.4.3"
     },
     "workspaces": {
         "packages": [
