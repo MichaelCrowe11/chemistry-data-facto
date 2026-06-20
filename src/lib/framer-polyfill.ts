@@ -7,21 +7,21 @@ if (typeof window !== 'undefined') {
       timing: { navigationStart: startTime },
       navigation: { type: 0 },
       timeOrigin: startTime
+    };
   } else {
-  } else {ow.performance.now || typeof window.performance.now !== 'function') {
     if (!window.performance.now || typeof window.performance.now !== 'function') {
-      window.performance.now = function() { Time); 
+      window.performance.now = function() {
         return Date.now() - ((window.performance.timeOrigin as number) || startTime); 
       };
     }
-    (!window.performance.timing) {
-    if (!window.performance.timing) {g = {
+    
+    if (!window.performance.timing) {
       (window.performance as any).timing = {
         navigationStart: startTime
       };
     }
-    (!window.performance.navigation) {
-    if (!window.performance.navigation) {n = {
+    
+    if (!window.performance.navigation) {
       (window.performance as any).navigation = {
         type: 0
       };
@@ -30,6 +30,7 @@ if (typeof window !== 'undefined') {
     if (typeof window.performance.timeOrigin !== 'number') {
       (window.performance as any).timeOrigin = startTime;
     }
+  }
   
   if (typeof window.requestAnimationFrame !== 'function') {
     let lastTime = 0;
