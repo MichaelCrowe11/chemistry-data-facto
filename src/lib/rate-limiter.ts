@@ -130,7 +130,11 @@ export const rateLimitConfigs = {
 }
 
 /**
- * Check rate limit for AI API calls
+ * Determine whether an AI chat request for a user is allowed under the configured tiered rate limits.
+ *
+ * @param userId - The user's unique identifier used to track requests
+ * @param tier - Subscription tier to apply (`free`, `paid`, or `pro`); defaults to `free`
+ * @returns A RateLimitResult describing whether the request is allowed, how many requests remain in the window, the reset time, and an optional `retryAfter` when the limit is exceeded
  */
 export function checkAIRateLimit(userId: string, tier: 'free' | 'paid' | 'pro' = 'free'): RateLimitResult {
   const config = rateLimitConfigs.aiChat[tier]
@@ -141,7 +145,9 @@ export function checkAIRateLimit(userId: string, tier: 'free' | 'paid' | 'pro' =
 }
 
 /**
- * Check rate limit for code execution
+ * Determine whether a user may perform a code execution request under the configured rate limits.
+ *
+ * @returns A `RateLimitResult` describing whether the request is allowed, the number of remaining requests in the current window, the timestamp when the window resets (`resetAt`), and `retryAfter` seconds when the request is blocked.
  */
 export function checkExecutionRateLimit(userId: string): RateLimitResult {
   return rateLimiter.check({
@@ -151,7 +157,10 @@ export function checkExecutionRateLimit(userId: string): RateLimitResult {
 }
 
 /**
- * Check rate limit for file operations
+ * Checks the file-operations rate limit for a given user.
+ *
+ * @param userId - The user identifier used to build the rate-limit key (`file-<userId>`).
+ * @returns `RateLimitResult` describing whether the request is allowed, how many requests remain in the current window, the reset timestamp, and an optional `retryAfter` in seconds when the limit is exceeded.
  */
 export function checkFileRateLimit(userId: string): RateLimitResult {
   return rateLimiter.check({
@@ -161,7 +170,9 @@ export function checkFileRateLimit(userId: string): RateLimitResult {
 }
 
 /**
- * Check rate limit for paper search
+ * Determine whether a paper-search request for the given user is allowed by the configured rate limit.
+ *
+ * @returns An object indicating if the request is allowed, the number of remaining requests in the current window, the reset timestamp (`resetAt`, milliseconds since epoch), and `retryAfter` seconds when the window is exhausted (present only when blocked).
  */
 export function checkPaperSearchRateLimit(userId: string): RateLimitResult {
   return rateLimiter.check({
@@ -171,7 +182,11 @@ export function checkPaperSearchRateLimit(userId: string): RateLimitResult {
 }
 
 /**
- * Check rate limit for quantum synthesis
+ * Enforces quantum synthesis rate limits for a given user and subscription tier.
+ *
+ * @param userId - Identifier for the user whose requests are being tracked
+ * @param tier - Subscription tier that selects the configured quota (`'free' | 'paid' | 'pro'`)
+ * @returns `RateLimitResult` containing `allowed`, `remaining`, `resetAt`, and optional `retryAfter`
  */
 export function checkQuantumRateLimit(userId: string, tier: 'free' | 'paid' | 'pro' = 'free'): RateLimitResult {
   const config = rateLimitConfigs.quantumSynthesis[tier]
@@ -182,7 +197,16 @@ export function checkQuantumRateLimit(userId: string, tier: 'free' | 'paid' | 'p
 }
 
 /**
- * React hook for rate limit checking
+ * Provides a React-friendly interface to perform rate limit checks for different endpoints.
+ *
+ * The returned `checkLimit` function dispatches to the appropriate per-endpoint checker and returns
+ * the resulting RateLimitResult for the given user and tier.
+ *
+ * @param type - One of 'ai', 'execution', 'file', 'paper', or 'quantum' indicating which rate limit to check
+ * @param userId - Identifier for the user whose quota is being checked
+ * @param tier - Subscription tier for tiered endpoints; defaults to 'free'
+ * @returns The rate limit outcome including `allowed`, `remaining`, `resetAt`, and optional `retryAfter`
+ * @throws Error if `type` is not one of the supported rate limit types
  */
 export function useRateLimit() {
   const checkLimit = (type: string, userId: string, tier: 'free' | 'paid' | 'pro' = 'free'): RateLimitResult => {
