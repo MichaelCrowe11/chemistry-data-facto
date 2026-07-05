@@ -9,7 +9,7 @@ import os
 
 import numpy as np
 
-from crowe_copilot import chem_utils, dose_response
+from crowe_copilot import chem_utils, dose_response, mixtures
 
 CHEM_MODELS = {"deepseek-v4-pro", "crowenimbus", "teeai"}
 CHEM_DEFAULT_MODEL = os.getenv("CROWE_SCIENCE_MODEL", "deepseek-v4-pro")
@@ -112,6 +112,44 @@ CHEM_TOOLS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "combination_index",
+            "description": "Loewe combination index (CI) for a two-drug mixture at given "
+            "concentrations and their single-agent EC50s. CI below 1 indicates synergy, near 1 "
+            "additivity, above 1 antagonism.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "conc_a": {"type": "number"},
+                    "conc_b": {"type": "number"},
+                    "ec50_a": {"type": "number"},
+                    "ec50_b": {"type": "number"},
+                    "fa": {"type": "number", "description": "fraction affected (0-1) by the combination"},
+                },
+                "required": ["conc_a", "conc_b", "ec50_a", "ec50_b", "fa"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "bliss_synergy",
+            "description": "Bliss independence synergy from single-agent and combination effect "
+            "fractions (0-1). Returns the Bliss-expected effect, the observed-minus-expected delta, "
+            "and a synergy classification.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "effect_a": {"type": "number"},
+                    "effect_b": {"type": "number"},
+                    "effect_combo": {"type": "number"},
+                },
+                "required": ["effect_a", "effect_b", "effect_combo"],
+            },
+        },
+    },
 ]
 
 
@@ -145,6 +183,19 @@ def chem_execute(name: str, args: dict) -> dict:
             return {"source": "PubChem", "query": args["name"], "results": _pubchem_search(args["name"])}
         if name == "search_chembl":
             return {"source": "ChEMBL", "query": args["query"], "results": _chembl_search(args["query"])}
+        if name == "combination_index":
+            ci = mixtures.combination_index_loewe(
+                float(args["conc_a"]), float(args["conc_b"]),
+                float(args["ec50_a"]), float(args["ec50_b"]), float(args["fa"]),
+            )
+            interp = "synergy" if ci < 0.9 else ("antagonism" if ci > 1.1 else "near-additive")
+            return {"combination_index": ci, "interpretation": interp}
+        if name == "bliss_synergy":
+            ea, eb, eab = float(args["effect_a"]), float(args["effect_b"]), float(args["effect_combo"])
+            expected = mixtures.bliss_independence(ea, eb)
+            delta = eab - expected
+            return {"expected_bliss": expected, "observed": eab, "delta": delta,
+                    "classification": mixtures.classify_synergy(delta)}
         return {"error": f"unknown tool: {name}"}
     except Exception as e:
         return {"error": f"{type(e).__name__}: {e}"}

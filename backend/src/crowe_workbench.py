@@ -10,8 +10,12 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import secrets
 import socket
+import sqlite3
+import threading
+import time
 import webbrowser
 from pathlib import Path
 
@@ -166,6 +170,7 @@ _TEMPLATE = """<!DOCTYPE html>
 </div></div>
 <script>
 const chat=document.getElementById('chat'); const history=[];
+const SID=(self.crypto&&crypto.randomUUID)?crypto.randomUUID():(''+Math.random()).slice(2);
 const DASH_EP="__DASH_EP__";
 const LBL={temperature_c:'Temp',humidity_pct:'Humidity',co2_ppm:'CO2',vpd_kpa:'VPD',light_lux:'Light'};
 function warnCls(m,v){ if(v==null) return '';
@@ -191,7 +196,7 @@ function bubble(role,text){const d=document.createElement('div'); d.className='m
 async function ask(){const i=document.getElementById('ask'); const m=i.value.trim(); if(!m) return; i.value='';
   bubble('user',m); const t=bubble('bot','...');
   try{const r=await fetch('/api/v1/agent/chat',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({message:m,history,model:document.getElementById('model').value})});
+    body:JSON.stringify({message:m,history,model:document.getElementById('model').value,session_id:SID})});
     const d=await r.json(); t.innerHTML=md(d.reply||'(no reply)');
     if(d.trace&&d.trace.length){const e=document.createElement('div'); e.className='trace';
       e.textContent='called: '+d.trace.map(x=>x.tool).join('  ,  '); chat.appendChild(e);}
@@ -219,12 +224,26 @@ class _ChatReq(BaseModel):
     message: str
     history: list = []
     model: str | None = None
+    session_id: str | None = None
 
 
-def create_app(*, title, subtitle, system, tools, execute_tool, models, default_model, placeholder, footer, dashboard_endpoint=None, on_app=None) -> FastAPI:
+def create_app(*, title, subtitle, system, tools, execute_tool, models, default_model, placeholder, footer, dashboard_endpoint=None, on_app=None, data_dir=None) -> FastAPI:
     app = FastAPI(title=title)
     token = secrets.token_urlsafe(24)
     cookie = "crowe_wb_session"
+
+    # Persistence: every turn (question, model, reply, full tool trace) is saved so
+    # each answer traces to the exact tool calls and data that produced it.
+    slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-") or "workbench"
+    ddir = Path(data_dir) if data_dir else (Path.home() / ".crowe-workbench" / slug)
+    ddir.mkdir(parents=True, exist_ok=True)
+    db = sqlite3.connect(str(ddir / "sessions.db"), check_same_thread=False)
+    db.execute(
+        "CREATE TABLE IF NOT EXISTS turns (id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "session_id TEXT, ts REAL, model TEXT, question TEXT, reply TEXT, trace TEXT)"
+    )
+    db.commit()
+    db_lock = threading.Lock()
 
     class TokenGate(BaseHTTPMiddleware):
         async def dispatch(self, request, call_next):
@@ -262,15 +281,49 @@ def create_app(*, title, subtitle, system, tools, execute_tool, models, default_
 
     @app.post("/api/v1/agent/chat")
     def chat(req: _ChatReq):
+        sid = req.session_id or secrets.token_hex(8)
         if not (GATEWAY_URL and GATEWAY_KEY):
-            return {"reply": "Crowe gateway not configured (FOUNDRY_GATEWAY_URL / key missing).", "trace": []}
+            return {"reply": "Crowe gateway not configured (FOUNDRY_GATEWAY_URL / key missing).", "trace": [], "session_id": sid}
         m = req.model if req.model in models else default_model
         try:
-            return run_agent(m, system, tools, execute_tool, req.message, req.history)
+            result = run_agent(m, system, tools, execute_tool, req.message, req.history)
         except httpx.HTTPStatusError as e:
-            return {"reply": f"gateway error {e.response.status_code}: {e.response.text[:200]}", "trace": []}
+            result = {"reply": f"gateway error {e.response.status_code}: {e.response.text[:200]}", "trace": []}
         except Exception as e:
-            return {"reply": f"error: {type(e).__name__}: {e}", "trace": []}
+            result = {"reply": f"error: {type(e).__name__}: {e}", "trace": []}
+        result["session_id"] = sid
+        try:
+            with db_lock:
+                db.execute(
+                    "INSERT INTO turns (session_id, ts, model, question, reply, trace) VALUES (?,?,?,?,?,?)",
+                    (sid, time.time(), result.get("model", m), req.message,
+                     result.get("reply", ""), json.dumps(result.get("trace", []))),
+                )
+                db.commit()
+        except Exception:
+            pass
+        return result
+
+    @app.get("/api/v1/history")
+    def history(limit: int = 30):
+        with db_lock:
+            rows = db.execute(
+                "SELECT session_id, ts, model, question, substr(reply,1,160) FROM turns ORDER BY id DESC LIMIT ?",
+                (int(limit),),
+            ).fetchall()
+        return {"turns": [
+            {"session_id": r[0], "ts": r[1], "model": r[2], "question": r[3], "reply_preview": r[4]} for r in rows
+        ]}
+
+    @app.get("/api/v1/history/{sid}")
+    def history_session(sid: str):
+        with db_lock:
+            rows = db.execute(
+                "SELECT ts, model, question, reply, trace FROM turns WHERE session_id=? ORDER BY id ASC", (sid,)
+            ).fetchall()
+        return {"session_id": sid, "turns": [
+            {"ts": r[0], "model": r[1], "question": r[2], "reply": r[3], "trace": json.loads(r[4] or "[]")} for r in rows
+        ]}
 
     @app.get("/", response_class=HTMLResponse)
     def console():
