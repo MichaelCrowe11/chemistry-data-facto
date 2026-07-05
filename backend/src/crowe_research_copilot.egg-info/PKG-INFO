@@ -21,6 +21,7 @@ Description-Content-Type: text/markdown
 License-File: LICENSE
 Requires-Dist: fastapi>=0.109.0
 Requires-Dist: uvicorn[standard]>=0.27.0
+Requires-Dist: httpx>=0.27.0
 Requires-Dist: pydantic>=2.7.0
 Requires-Dist: pydantic-settings>=2.0.0
 Requires-Dist: rdkit>=2023.9.1
@@ -102,6 +103,9 @@ export NP_ORCID_CLIENT_ID=your_orcid_client_id
 export NP_ORCID_CLIENT_SECRET=your_orcid_secret
 export NP_ZENODO_ACCESS_TOKEN=your_zenodo_token
 export NP_ZENODO_USE_SANDBOX=true
+
+# Optional: override bind port (useful on Railway)
+export PORT=8000
 
 # Start FastAPI server
 python src/api.py

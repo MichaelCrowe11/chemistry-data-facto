@@ -142,11 +142,20 @@ _TEMPLATE = """<!DOCTYPE html>
   button{ padding:0 20px; border:0; border-radius:10px; background:var(--ink); color:var(--paper); font:600 14px Inter, sans-serif; cursor:pointer; transition:transform 110ms cubic-bezier(.16,1,.3,1); }
   button:hover{ background:#000; } button:active{ transform:translateY(1px); }
   .hint{ color:var(--dim); font-size:11.5px; margin-top:8px; }
+  .dash{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin-bottom:24px; }
+  .dash:empty{ display:none; }
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:12px; box-shadow:var(--z); padding:14px 16px; }
+  .card h3{ margin:0 0 10px; font:500 12px 'JetBrains Mono', monospace; letter-spacing:.06em; text-transform:uppercase; color:var(--dim); }
+  .tiles{ display:grid; grid-template-columns:1fr 1fr; gap:9px 14px; }
+  .tile .k{ font-size:11px; color:var(--dim); }
+  .tile .v{ font:600 16px Inter, sans-serif; } .tile .v.warn{ color:#b5642a; }
+  .tile .u{ font-size:11px; color:var(--dim); font-weight:400; }
+  .dash-note{ grid-column:1/-1; font:11px 'JetBrains Mono', monospace; color:var(--dim); }
   @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
 </style></head>
 <body>
 <header><div class="brand"><span class="dot"></span><h1>__TITLE__</h1></div><div class="sub">__SUBTITLE__</div></header>
-<main><div id="chat" class="chat"></div></main>
+<main><div id="dash" class="dash"></div><div id="chat" class="chat"></div></main>
 <div class="composer"><div class="composer-in">
   <div class="row">
     <input id="ask" placeholder="__PLACEHOLDER__"/>
@@ -157,6 +166,24 @@ _TEMPLATE = """<!DOCTYPE html>
 </div></div>
 <script>
 const chat=document.getElementById('chat'); const history=[];
+const DASH_EP="__DASH_EP__";
+const LBL={temperature_c:'Temp',humidity_pct:'Humidity',co2_ppm:'CO2',vpd_kpa:'VPD',light_lux:'Light'};
+function warnCls(m,v){ if(v==null) return '';
+  if(m==='co2_ppm'&&v>1000) return 'warn';
+  if(m==='vpd_kpa'&&(v<0.4||v>1.6)) return 'warn';
+  if(m==='temperature_c'&&(v<15||v>26)) return 'warn';
+  if(m==='humidity_pct'&&v<80) return 'warn'; return ''; }
+async function renderDash(){ if(!DASH_EP) return; const el=document.getElementById('dash');
+  try{ const d=await (await fetch(DASH_EP)).json(); const nodes=d.nodes||{}; let h='';
+    for(const [node,mets] of Object.entries(nodes)){ let tiles='';
+      for(const [m,info] of Object.entries(mets)){ const v=info.value;
+        const dp=(m==='co2_ppm'||m==='light_lux')?0:2;
+        tiles+=`<div class="tile"><div class="k">${LBL[m]||m}</div><div class="v ${warnCls(m,v)}">${v==null?'-':(+v).toFixed(dp)} <span class="u">${info.unit||''}</span></div></div>`; }
+      h+=`<div class="card"><h3>${node}</h3><div class="tiles">${tiles}</div></div>`; }
+    if(d.total_readings) h+=`<div class="dash-note">${(+d.total_readings).toLocaleString()} readings logged</div>`;
+    el.innerHTML=h;
+  }catch(e){ el.innerHTML='<div class="dash-note">sensor unreachable</div>'; } }
+if(DASH_EP){ renderDash(); setInterval(renderDash, 20000); }
 function md(x){ return (window.marked ? marked.parse(x) : x); }
 function bubble(role,text){const d=document.createElement('div'); d.className='msg '+(role==='user'?'user':'bot');
   if(role==='user'){ d.textContent=text; } else { d.innerHTML=md(text); }
@@ -176,7 +203,7 @@ document.getElementById('ask').addEventListener('keydown',e=>{if(e.key==='Enter'
 </script></body></html>"""
 
 
-def build_console(title, subtitle, placeholder, models, footer) -> str:
+def build_console(title, subtitle, placeholder, models, footer, dashboard_endpoint="") -> str:
     opts = "".join(f'<option value="{m}">{m}</option>' for m in models)
     return (
         _TEMPLATE.replace("__TITLE__", title)
@@ -184,6 +211,7 @@ def build_console(title, subtitle, placeholder, models, footer) -> str:
         .replace("__PLACEHOLDER__", placeholder)
         .replace("__MODELS__", opts)
         .replace("__FOOTER__", footer)
+        .replace("__DASH_EP__", dashboard_endpoint or "")
     )
 
 
@@ -193,7 +221,7 @@ class _ChatReq(BaseModel):
     model: str | None = None
 
 
-def create_app(*, title, subtitle, system, tools, execute_tool, models, default_model, placeholder, footer) -> FastAPI:
+def create_app(*, title, subtitle, system, tools, execute_tool, models, default_model, placeholder, footer, dashboard_endpoint=None, on_app=None) -> FastAPI:
     app = FastAPI(title=title)
     token = secrets.token_urlsafe(24)
     cookie = "crowe_wb_session"
@@ -215,7 +243,9 @@ def create_app(*, title, subtitle, system, tools, execute_tool, models, default_
 
     app.add_middleware(TokenGate)
     app.state.session_token = token
-    html = build_console(title, subtitle, placeholder, models, footer)
+    if on_app is not None:
+        on_app(app)
+    html = build_console(title, subtitle, placeholder, models, footer, dashboard_endpoint or "")
 
     @app.get("/health")
     def health():

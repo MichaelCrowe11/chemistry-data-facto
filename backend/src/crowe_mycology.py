@@ -19,7 +19,16 @@ from crowe_sense import (  # noqa: E402
     CULT_TOOLS,
     cult_execute,
 )
+from crowe_sense import cult_execute as _cult_execute  # noqa: E402
 from crowe_workbench import create_app, serve  # noqa: E402
+
+
+def _register_sense_routes(app):
+    @app.get("/api/v1/sense/snapshot")
+    def sense_snapshot():
+        # Reuse the live-telemetry tool that powers the agent.
+        return _cult_execute("sense_now", {})
+
 
 app = create_app(
     title="Crowe Logic Mycology",
@@ -31,6 +40,8 @@ app = create_app(
     default_model=CULT_DEFAULT_MODEL,
     placeholder="e.g. How are my fruiting tents doing right now? Is tent-2 CO2 too high for fruiting?",
     footer="Sensors: Crowe Sense (live). Reasoning: Crowe model stack via Foundry gateway. No third-party hosted models.",
+    dashboard_endpoint="/api/v1/sense/snapshot",
+    on_app=_register_sense_routes,
 )
 
 
