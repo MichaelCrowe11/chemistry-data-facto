@@ -1,5 +1,5 @@
 import { useKV } from '@github/spark/hooks'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
 export interface DataBackup {
   timestamp: number
@@ -9,7 +9,8 @@ export interface DataBackup {
 }
 
 export const useDataProtection = (userId: string) => {
-  const [backups, setBackups] = useKV<DataBackup[]>(`data-backups-${userId}`, [])
+  const [storedBackups, setBackups] = useKV<DataBackup[]>(`data-backups-${userId}`, [])
+  const backups = useMemo(() => storedBackups ?? [], [storedBackups])
   const [encryptionEnabled, setEncryptionEnabled] = useKV<boolean>(`encryption-enabled-${userId}`, false)
 
   const createChecksum = useCallback(async (data: string): Promise<string> => {
@@ -43,7 +44,7 @@ export const useDataProtection = (userId: string) => {
       checksum,
     }
 
-    setBackups((current) => {
+    setBackups((current = []) => {
       const newBackups = [...current, backup]
       return newBackups.slice(-10)
     })

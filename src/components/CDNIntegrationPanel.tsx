@@ -61,8 +61,10 @@ interface CDNIntegrationPanelProps {
 }
 
 export function CDNIntegrationPanel({ onClose }: CDNIntegrationPanelProps) {
-  const [providers, setProviders] = useKV<CDNProvider[]>('cdn-providers', [])
-  const [assets, setAssets] = useKV<CDNAsset[]>('cdn-assets', [])
+  const [storedProviders, setProviders] = useKV<CDNProvider[]>('cdn-providers', [])
+  const [storedAssets, setAssets] = useKV<CDNAsset[]>('cdn-assets', [])
+  const providers = storedProviders ?? []
+  const assets = storedAssets ?? []
   const [metrics, setMetrics] = useState<CDNMetrics>({
     totalAssets: 0,
     totalBandwidth: 0,
@@ -129,7 +131,7 @@ export function CDNIntegrationPanel({ onClose }: CDNIntegrationPanelProps) {
       enabled: true
     }
 
-    setProviders((current) => [...current, provider])
+    setProviders((current = []) => [...current, provider])
     setConfigDialogOpen(false)
     setNewProvider({
       name: '',
@@ -143,7 +145,7 @@ export function CDNIntegrationPanel({ onClose }: CDNIntegrationPanelProps) {
   }
 
   const handleRemoveProvider = (id: string) => {
-    setProviders((current) => current.filter(p => p.id !== id))
+    setProviders((current = []) => current.filter(p => p.id !== id))
     toast.success('CDN provider removed')
   }
 
@@ -182,7 +184,7 @@ export function CDNIntegrationPanel({ onClose }: CDNIntegrationPanelProps) {
         compressionSavings: 0
       }
 
-      setAssets((current) => [...current, asset])
+      setAssets((current = []) => [...current, asset])
     }
 
     setUploading(false)
@@ -194,7 +196,7 @@ export function CDNIntegrationPanel({ onClose }: CDNIntegrationPanelProps) {
     toast.info('Purging cache...')
     await new Promise(resolve => setTimeout(resolve, 1000))
     
-    setAssets((current) =>
+    setAssets((current = []) =>
       current.map(a =>
         a.id === assetId ? { ...a, cacheStatus: 'MISS' as const } : a
       )
@@ -207,7 +209,7 @@ export function CDNIntegrationPanel({ onClose }: CDNIntegrationPanelProps) {
     await new Promise(resolve => setTimeout(resolve, 1500))
     
     const savings = 25 + Math.random() * 40
-    setAssets((current) =>
+    setAssets((current = []) =>
       current.map(a =>
         a.id === assetId
           ? { ...a, optimized: true, compressionSavings: savings }
@@ -451,7 +453,7 @@ export function CDNIntegrationPanel({ onClose }: CDNIntegrationPanelProps) {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => setAssets((current) => current.filter(a => a.id !== asset.id))}
+                        onClick={() => setAssets((current = []) => current.filter(a => a.id !== asset.id))}
                         className="text-red-400 hover:text-red-300"
                       >
                         <Trash className="h-4 w-4" />
