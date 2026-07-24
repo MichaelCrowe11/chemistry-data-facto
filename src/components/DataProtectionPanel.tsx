@@ -58,7 +58,7 @@ export function DataProtectionPanel({ userId, onClose }: DataProtectionPanelProp
   const loadUserName = async () => {
     try {
       const user = await window.spark.user()
-      setUserName(user.login)
+      setUserName(user?.login ?? 'User')
     } catch (error) {
       setUserName('User')
     }

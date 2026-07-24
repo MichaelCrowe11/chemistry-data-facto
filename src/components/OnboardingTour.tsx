@@ -189,7 +189,7 @@ interface OnboardingTourProps {
 }
 
 export function OnboardingTour({ onComplete }: OnboardingTourProps) {
-  const [hasSeenTour, setHasSeenTour] = useKV('crowe-code-onboarding-complete', false)
+  const [hasSeenTour, setHasSeenTour] = useKV<boolean>('crowe-code-onboarding-complete', false)
   const [currentStep, setCurrentStep] = useState(0)
   const [isVisible, setIsVisible] = useState(!hasSeenTour)
   const [highlightElement, setHighlightElement] = useState<HTMLElement | null>(null)

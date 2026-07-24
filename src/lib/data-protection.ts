@@ -47,9 +47,9 @@ export class DataProtectionService {
       }
     }
 
-    const assets = await window.spark.kv.get('crowe-assets') || []
-    const settings = await window.spark.kv.get(`crowe-settings-${userId}`) || {}
-    const experiments = await window.spark.kv.get(`crowe-experiments-${userId}`) || []
+    const assets = await window.spark.kv.get<DataSnapshot['assets']>('crowe-assets') || []
+    const settings = await window.spark.kv.get<DataSnapshot['settings']>(`crowe-settings-${userId}`) || {}
+    const experiments = await window.spark.kv.get<DataSnapshot['experiments']>(`crowe-experiments-${userId}`) || []
 
     const metadata: BackupMetadata = {
       id: `backup-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
